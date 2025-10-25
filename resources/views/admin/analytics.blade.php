@@ -43,23 +43,32 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Total Revenue -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Total Revenue</p>
-                            <p class="text-2xl font-semibold text-gray-900">₱{{ number_format($totalRevenue ?? 0, 2) }}</p>
-                        </div>
+        <!-- Total Revenue -->
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                            </path>
+                        </svg>
                     </div>
                 </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total Revenue (Paid)</p>
+                    <p class="text-2xl font-semibold text-gray-900">
+                        ₱{{ number_format($totalRevenue ?? 0, 2) }}
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Today: ₱{{ number_format($dailyRevenue ?? 0, 2) }}<br>
+                        This Week: ₱{{ number_format($weeklyRevenue ?? 0, 2) }}<br>
+                        This Month: ₱{{ number_format($monthlyRevenueTotal ?? 0, 2) }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
 
                 <!-- Active Services -->
                 <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
@@ -223,8 +232,8 @@
             data: {
                 labels: {!! json_encode($monthlyRevenue->pluck('month')->map(function($month) { return \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y'); })) !!},
                 datasets: [{
-                    label: 'Revenue ($)',
-                    data: {!! json_encode($monthlyRevenue->pluck('revenue')) !!},
+                label: 'Paid Revenue (₱)',
+                data: {!! json_encode($monthlyRevenue->pluck('revenue')) !!},
                     borderColor: '#10B981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                     borderWidth: 3,

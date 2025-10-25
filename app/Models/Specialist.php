@@ -31,6 +31,10 @@ class Specialist extends Model
     {
         return $this->belongsToMany(Service::class, 'specialist_services');
     }
+    public function specialists()
+    {
+        return $this->belongsToMany(Specialist::class, 'service_specialist');
+    }
 
     public function appointments()
     {

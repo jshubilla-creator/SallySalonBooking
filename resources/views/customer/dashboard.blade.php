@@ -83,10 +83,21 @@
                                             data-service-name="{{ $appointment->service->name }}">{{ $appointment->service->name }}</h3>
                                         <p class="text-sm text-gray-600"
                                            data-specialist-name="{{ $appointment->specialist->name }}">with {{ $appointment->specialist->name }}</p>
-                                        <p class="text-sm text-gray-500">
-                                            <span data-appointment-date="{{ $appointment->appointment_date->format('M d, Y') }}">{{ $appointment->appointment_date->format('M d, Y') }}</span>
-                                            at <span data-appointment-time="{{ $appointment->start_time }}">{{ \App\Helpers\TimeHelper::formatTo12Hour($appointment->start_time) }}</span>
-                                        </p>
+                                                @php
+                              
+                                               $startTime = \Carbon\Carbon::parse($appointment->start_time);
+
+                                                @endphp
+
+                                                <p class="text-sm text-gray-500">
+                                                    <span data-appointment-date="{{ $appointment->appointment_date->format('M d, Y') }}">
+                                                        {{ $appointment->appointment_date->format('M d, Y') }}
+                                                    </span>
+                                                    at 
+                                                    <span data-appointment-time="{{ $startTime->format('H:i:s') }}">
+                                                        {{ $startTime->format('g:i A') }}
+                                                    </span>
+                                                </p>
                                         <p class="mt-1 text-sm font-medium">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                                 @switch(strtolower($appointment->payment_method))

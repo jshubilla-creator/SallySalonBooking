@@ -32,9 +32,9 @@ class Appointment extends Model
     ];
 
     protected $casts = [
-        'appointment_date' => 'date',
-        'start_time' => 'datetime:H:i:s',
-        'end_time' => 'datetime:H:i:s',
+      'appointment_date' => 'datetime',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
         'total_price' => 'decimal:2',
         'tip_amount' => 'decimal:2',
         'is_home_service' => 'boolean',

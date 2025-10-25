@@ -51,6 +51,16 @@
                                 </svg>
                                 Services
                             </a>
+                            
+                            <!-- Payments -->
+                            <a href="{{ route('manager.payments.index') }}"
+                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('manager.payments.*') ? 'bg-green-100 text-green-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-2.21 0-4 .79-4 2v6c0 1.21 1.79 2 4 2s4-.79 4-2v-6c0-1.21-1.79-2-4-2zM4 8v6m16-6v6m-8-10V4m0 16v2" />
+                                </svg>
+                                Payments
+                            </a>
 
                             <!-- Specialists -->
                             <a href="{{ route('manager.specialists.index') }}"

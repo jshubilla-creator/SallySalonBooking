@@ -43,7 +43,7 @@
 
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Price</dt>
-                            <dd class="mt-1 text-sm text-gray-900 font-semibold">${{ number_format($service->price, 2) }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900 font-semibold">{{ number_format($service->price, 2) }}</dd>
                         </div>
 
                         <div>

@@ -34,7 +34,8 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::get('/appointments/create', [CustomerAppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [CustomerAppointmentController::class, 'store'])->name('appointments.store');
     Route::post('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel');
-    Route::get('/appointments/specialists', [CustomerAppointmentController::class, 'getSpecialistsForService'])->name('appointments.specialists');
+    Route::get('/appointments/specialists', [CustomerAppointmentController::class, 'getSpecialists'])->name('appointments.specialists');
+
     Route::get('/appointments/booked-slots', [CustomerAppointmentController::class, 'getBookedTimeSlots'])->name('appointments.booked-slots');
 
     // Feedback
@@ -53,19 +54,30 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
 // Manager Routes
 Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Manager\DashboardController::class, 'index'])->name('dashboard');
+    // Payments
+    Route::post('/payments/{id}/update-price', [App\Http\Controllers\Manager\PaymentController::class, 'updatePrice'])
+    ->name('payments.updatePrice');
+    Route::get('/payments', [App\Http\Controllers\Manager\PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{id}/add', [App\Http\Controllers\Manager\PaymentController::class, 'addPayment'])
+    ->name('payments.add');
+    Route::post('/payments/{id}/record', [App\Http\Controllers\Manager\PaymentController::class, 'recordPayment'])
+        ->name('payments.record');
+        Route::put('/payments/{id}/update', [App\Http\Controllers\Manager\PaymentController::class, 'update'])->name('payments.update');
+        Route::delete('/payments/{id}/delete', [App\Http\Controllers\Manager\PaymentController::class, 'destroy'])->name('payments.delete');
+
 
     // Appointments
     Route::resource('appointments', App\Http\Controllers\Manager\AppointmentController::class);
     Route::post('/appointments/{appointment}/approve', [App\Http\Controllers\Manager\AppointmentController::class, 'approve'])->name('appointments.approve');
     Route::post('/appointments/{appointment}/cancel', [App\Http\Controllers\Manager\AppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::post('/appointments/{appointment}/complete', [App\Http\Controllers\Manager\AppointmentController::class, 'complete'])->name('appointments.complete');
-
+    Route::get('/specialists', [AppointmentController::class, 'getSpecialistsForService']);
     // Services
     Route::resource('services', App\Http\Controllers\Manager\ServiceController::class);
 
     // Specialists
     Route::resource('specialists', App\Http\Controllers\Manager\SpecialistController::class);
-
+    
     // Inventory
     Route::resource('inventory', App\Http\Controllers\Manager\InventoryController::class);
 

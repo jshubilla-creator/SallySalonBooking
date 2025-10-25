@@ -6,12 +6,12 @@
                 <h1 class="text-3xl font-bold text-gray-900">Appointments</h1>
                 <p class="mt-2 text-lg text-gray-600">Manage all salon appointments</p>
             </div>
-            <div class="flex space-x-3">
+            <!-- <div class="flex space-x-3">
                 <a href="{{ route('manager.appointments.create') }}"
                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
                     New Appointment
                 </a>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -124,8 +124,13 @@
                                 </td>
                                 <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
                                     <div class="text-xs sm:text-sm text-gray-900">{{ $appointment->appointment_date->format('M d, Y') }}</div>
-                                    <div class="text-xs sm:text-sm text-gray-500">{{ \App\Helpers\TimeHelper::formatTimeRange($appointment->start_time, $appointment->end_time) }}</div>
-                                </td>
+                                    <@php
+                                    $startTime = \Carbon\Carbon::parse($appointment->start_time);
+                                    $endTime = \Carbon\Carbon::parse($appointment->end_time);
+                                @endphp
+
+                                {{ $startTime->format('g:i A') }} – {{ $endTime->format('g:i A') }}
+
                                 <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                         @if($appointment->status === 'confirmed') bg-green-100 text-green-800

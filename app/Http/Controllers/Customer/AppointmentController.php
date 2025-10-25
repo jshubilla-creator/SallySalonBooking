@@ -19,19 +19,17 @@ class AppointmentController extends Controller
         $selectedService = null;
         $selectedSpecialist = null;
 
-        // If specialist is pre-selected, get it and filter services
+        // If specialist is pre-selected, filter services
         if ($request->has('specialist')) {
             $selectedSpecialist = Specialist::find($request->specialist);
-            if ($selectedSpecialist) {
-                $services = $selectedSpecialist->services()->where('is_active', true)->get();
-            } else {
-                $services = Service::active()->get();
-            }
+            $services = $selectedSpecialist
+                ? $selectedSpecialist->services()->where('is_active', true)->get()
+                : Service::active()->get();
         } else {
             $services = Service::active()->get();
         }
 
-        // If service is pre-selected, get it
+        // If service is pre-selected
         if ($request->has('service')) {
             $selectedService = Service::find($request->service);
         }
@@ -42,9 +40,8 @@ class AppointmentController extends Controller
     /**
      * Store new appointment.
      */
-public function store(Request $request)
+  public function store(Request $request)
 {
-    // ✅ Store the validated data in a variable
     $validated = $request->validate([
         'service_id' => 'required|exists:services,id',
         'specialist_id' => 'required|exists:specialists,id',
@@ -64,30 +61,32 @@ public function store(Request $request)
         $service = Service::findOrFail($validated['service_id']);
         $specialist = Specialist::findOrFail($validated['specialist_id']);
 
+        // Build accurate Carbon timestamps
         $startTime = Carbon::parse($validated['appointment_date'] . ' ' . $validated['start_time']);
         $endTime = $startTime->copy()->addMinutes($service->duration_minutes);
 
+        // Prevent booking in the past
         if ($startTime->isToday() && $startTime->isPast()) {
-            return back()->withErrors(['start_time' => 'You cannot book an appointment in the past. Please select a future time.']);
+            return back()->withErrors(['start_time' => 'You cannot book an appointment in the past.']);
         }
 
-        $conflict = Appointment::where('specialist_id', $specialist->id)
-            ->whereDate('appointment_date', $validated['appointment_date'])
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime->format('H:i:s'), $endTime->format('H:i:s')])
-                    ->orWhereBetween('end_time', [$startTime->format('H:i:s'), $endTime->format('H:i:s')])
-                    ->orWhere(function ($q) use ($startTime, $endTime) {
-                        $q->where('start_time', '<=', $startTime->format('H:i:s'))
-                          ->where('end_time', '>=', $endTime->format('H:i:s'));
+            $conflict = Appointment::where('specialist_id', $specialist->id)
+                ->whereDate('appointment_date', $startTime->format('Y-m-d'))
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->where(function ($q) use ($startTime, $endTime) {
+                        $q->where('start_time', '<', $endTime->format('H:i:s'))
+                        ->where('end_time', '>', $startTime->format('H:i:s'));
                     });
-            })
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->exists();
+                })
+                ->exists();
+
 
         if ($conflict) {
-            return back()->withErrors(['start_time' => 'This time slot is already taken. Please select another time.']);
+            return back()->withErrors(['start_time' => 'This time slot is already taken. Please select another.']);
         }
 
+        // Calculate tip and totals
         $tip = $request->custom_tip && $request->custom_tip > 0
             ? $request->custom_tip
             : ($request->selected_tip ?? 0);
@@ -95,7 +94,7 @@ public function store(Request $request)
         $total = $service->price;
         $grandTotal = $total + $tip;
 
-        // ✅ Use the validated array now
+        // ✅ Create new appointment
         Appointment::create([
             'user_id' => auth()->id(),
             'service_id' => $service->id,
@@ -110,7 +109,7 @@ public function store(Request $request)
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'tip_amount' => $tip,
-            'payment_method' => $validated['payment_method'], // ✅ works now
+            'payment_method' => $validated['payment_method'],
             'total_price' => $total,
             'grand_total' => $grandTotal,
             'contact_phone' => auth()->user()->phone ?? '',
@@ -118,64 +117,60 @@ public function store(Request $request)
         ]);
 
         return redirect()->route('customer.dashboard')
-            ->with('success', 'Appointment booked successfully! You will receive a confirmation email shortly.');
+            ->with('success', 'Appointment booked successfully!');
     } catch (\Exception $e) {
-        return back()->withErrors(['appointment' => 'Failed to create appointment. Error: ' . $e->getMessage()]);
+        \Log::error('Appointment creation failed: ' . $e->getMessage());
+        return back()->withErrors(['appointment' => 'Failed to create appointment.']);
     }
 }
 
     /**
      * Cancel appointment.
      */
-   public function cancel(Request $request, Appointment $appointment)
-{
-    if ($appointment->user_id !== auth()->id()) {
-        abort(403);
+    public function cancel(Request $request, Appointment $appointment)
+    {
+        if ($appointment->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:500',
+        ]);
+
+        $appointment->update([
+            'status' => 'cancelled',
+            'cancellation_reason' => $request->cancellation_reason,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return back()->with('success', 'Appointment cancelled successfully.');
     }
-
-    $request->validate([
-        'cancellation_reason' => 'required|string|max:500',
-    ]);
-
-    $appointment->update([
-        'status' => 'cancelled',
-        'cancellation_reason' => $request->cancellation_reason,
-    ]);
-
-    if ($request->expectsJson()) {
-        return response()->json(['success' => true]);
-    }
-
-    return back()->with('success', 'Appointment cancelled successfully.');
-}
-
 
     /**
      * Fetch specialists for a service (AJAX).
      */
-    public function getSpecialistsForService(Request $request)
+    public function getSpecialists(Request $request)
     {
-        $serviceId = $request->get('service_id');
+        $serviceId = $request->query('service_id');
 
         if (!$serviceId) {
-            return response()->json(['error' => 'Service ID is required'], 400);
+            return response()->json(['error' => 'Missing service_id'], 400);
         }
 
-        $service = Service::findOrFail($serviceId);
-        $specialists = $service->specialists()
-            ->where('is_available', true)
-            ->get()
-            ->map(function ($specialist) {
-                return [
-                    'id' => $specialist->id,
-                    'name' => $specialist->name,
-                    'specialization' => $specialist->specialization,
-                    'experience_years' => $specialist->experience_years,
-                    'bio' => $specialist->bio,
-                ];
-            });
+        try {
+            $specialists = Specialist::whereHas('services', function ($q) use ($serviceId) {
+                $q->where('service_id', $serviceId);
+            })
+            ->select('id', 'name', 'specialization', 'experience_years', 'bio')
+            ->get();
 
-        return response()->json($specialists);
+            return response()->json($specialists);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -191,18 +186,30 @@ public function store(Request $request)
             return response()->json(['error' => 'Service ID, Specialist ID, and Date are required'], 400);
         }
 
-        $bookedSlots = Appointment::where('service_id', $serviceId)
-            ->where('specialist_id', $specialistId)
-            ->whereDate('appointment_date', $date)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->get()
-            ->map(function ($appointment) {
-                return [
-                    'start_time' => $appointment->start_time,
-                    'end_time' => $appointment->end_time,
-                ];
-            });
+        try {
+            $parsedDate = Carbon::parse($date)->format('Y-m-d');
 
-        return response()->json($bookedSlots);
+            \Log::info('🔍 Fetching booked slots', [
+                'service_id' => $serviceId,
+                'specialist_id' => $specialistId,
+                'date' => $parsedDate,
+            ]);
+
+            $bookedSlots = Appointment::where('service_id', $serviceId)
+                ->where('specialist_id', $specialistId)
+                ->whereDate('appointment_date', $parsedDate)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->select('start_time', 'end_time')
+                ->get();
+
+            if ($bookedSlots->isEmpty()) {
+                \Log::info('⚠️ No booked slots found for this date.');
+            }
+
+            return response()->json($bookedSlots);
+        } catch (\Exception $e) {
+            \Log::error('❌ Error fetching booked slots: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch booked time slots.'], 500);
+        }
     }
 }
