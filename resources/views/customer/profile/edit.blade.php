@@ -116,6 +116,19 @@
                             @enderror
                         </div>
 
+                        <!-- Two-Factor Authentication -->
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" 
+                                       name="two_factor_enabled" 
+                                       value="1" 
+                                       {{ $user->two_factor_enabled ? 'checked' : '' }}
+                                       class="rounded border-gray-300 text-pink-600 shadow-sm focus:ring-pink-500">
+                                <span class="ml-2 text-sm text-gray-700">Enable Two-Factor Authentication (Email)</span>
+                            </label>
+                            <p class="mt-1 text-xs text-gray-500">Receive email codes for enhanced security</p>
+                        </div>
+
                         <!-- Save Button -->
                         <div class="flex justify-end">
                             <button type="submit"
@@ -189,35 +202,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-
-            <!-- Two-Factor Authentication -->
-            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">🔐 Two-Factor Authentication</h2>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-900">Email Verification</h3>
-                            <p class="text-sm text-gray-600">
-                                @if($user->two_factor_enabled)
-                                    ✅ 2FA is enabled. You'll receive email codes when logging in.
-                                @else
-                                    Add an extra layer of security to your account with email verification.
-                                @endif
-                            </p>
-                        </div>
-                        <form method="post" action="{{ route('customer.profile.toggle-2fa') }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="two_factor_enabled" value="{{ $user->two_factor_enabled ? '0' : '1' }}">
-                            <button type="submit"
-                                    class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $user->two_factor_enabled ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-green-600 text-white hover:bg-green-700' }}">
-                                {{ $user->two_factor_enabled ? 'Disable 2FA' : 'Enable 2FA' }}
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
 

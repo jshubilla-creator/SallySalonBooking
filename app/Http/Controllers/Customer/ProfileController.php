@@ -31,22 +31,14 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Handle 2FA toggle separately
-        if ($request->has('two_factor_enabled') && !$request->has('name')) {
-            $enabled = $request->boolean('two_factor_enabled');
-            
-            if ($enabled && !$user->phone) {
-                return back()->withErrors(['phone' => 'Phone number is required to enable 2FA.']);
-            }
-            
-            $user->update(['two_factor_enabled' => $enabled]);
-            
-            $message = $enabled ? '2FA has been enabled for your account.' : '2FA has been disabled for your account.';
-            return back()->with('success', $message);
-        }
-
         // Handle regular profile update
         $user->fill($request->validated());
+        
+        // Handle 2FA checkbox
+        $user->two_factor_enabled = $request->has('two_factor_enabled');
+        if (!$user->two_factor_enabled) {
+            $user->resetTwoFactorCode();
+        }
 
         if ($request->hasFile('profile_picture')) {
             // Delete old photo if it exists
@@ -82,7 +74,7 @@ class ProfileController extends Controller
         $user = $request->user();
         
         // Verify 2FA if enabled
-        if ($user->two_factor_enabled && $user->phone) {
+        if ($user->two_factor_enabled) {
             if (!$user->isTwoFactorCodeValid($validated['two_factor_code'])) {
                 return back()->withErrors(['two_factor_code' => 'Invalid or expired verification code.']);
             }
@@ -109,7 +101,7 @@ class ProfileController extends Controller
         $user = $request->user();
         
         // Verify 2FA if enabled
-        if ($user->two_factor_enabled && $user->phone) {
+        if ($user->two_factor_enabled) {
             if (!$user->isTwoFactorCodeValid($request->two_factor_code)) {
                 return back()->withErrors(['two_factor_code' => 'Invalid or expired verification code.']);
             }

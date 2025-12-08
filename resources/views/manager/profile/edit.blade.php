@@ -123,6 +123,19 @@
 
 
 
+                            <!-- Two-Factor Authentication -->
+                            <div>
+                                <label class="flex items-center">
+                                    <input type="checkbox" 
+                                           name="two_factor_enabled" 
+                                           value="1" 
+                                           {{ $user->two_factor_enabled ? 'checked' : '' }}
+                                           class="rounded border-gray-300 text-pink-600 shadow-sm focus:ring-pink-500">
+                                    <span class="ml-2 text-sm text-gray-700">Enable Two-Factor Authentication (Email)</span>
+                                </label>
+                                <p class="mt-1 text-xs text-gray-500">Receive email codes for enhanced security</p>
+                            </div>
+
                             <!-- Save Button -->
                             <div class="flex justify-end">
                                 <button type="submit"

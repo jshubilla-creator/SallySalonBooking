@@ -3,9 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Appointment;
-use App\Services\SmsService;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentReminderMail;
 
 class SendAppointmentReminders extends Command
 {
@@ -21,7 +22,7 @@ class SendAppointmentReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Send SMS reminders for appointments scheduled for tomorrow';
+    protected $description = 'Send email reminders for appointments scheduled for tomorrow';
 
     /**
      * Execute the console command.
@@ -38,20 +39,19 @@ class SendAppointmentReminders extends Command
             ->whereIn('status', ['confirmed', 'pending'])
             ->get();
 
-        $smsService = new SmsService();
         $sentCount = 0;
 
         foreach ($appointments as $appointment) {
-            if ($appointment->user->phone) {
-                $success = $smsService->sendAppointmentReminder($appointment);
-                if ($success) {
+            if ($appointment->user->email) {
+                try {
+                    Mail::to($appointment->user->email)->send(new AppointmentReminderMail($appointment));
                     $sentCount++;
-                    $this->line("Reminder sent to {$appointment->user->name} ({$appointment->user->phone})");
-                } else {
-                    $this->error("Failed to send reminder to {$appointment->user->name}");
+                    $this->line("Reminder sent to {$appointment->user->name} ({$appointment->user->email})");
+                } catch (\Exception $e) {
+                    $this->error("Failed to send reminder to {$appointment->user->name}: {$e->getMessage()}");
                 }
             } else {
-                $this->warn("No phone number for {$appointment->user->name}");
+                $this->warn("No email for {$appointment->user->name}");
             }
         }
 

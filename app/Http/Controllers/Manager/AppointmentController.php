@@ -7,7 +7,7 @@ use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Specialist;
 use App\Models\User;
-use App\Services\SmsService;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Mail\AppointmentDeletedMail;
@@ -184,12 +184,7 @@ class AppointmentController extends Controller
                 $notifications[] = 'email';
             }
 
-            // Send SMS if enabled
-            if (($notificationSettings['sms_notifications'] ?? false) && ($notificationSettings['sms_confirmations'] ?? false)) {
-                $smsService = new SmsService();
-                $smsService->sendAppointmentConfirmation($appointment);
-                $notifications[] = 'SMS';
-            }
+
 
             $message = 'Appointment approved successfully.';
             if (!empty($notifications)) {
@@ -224,12 +219,7 @@ class AppointmentController extends Controller
             $notifications[] = 'email';
         }
 
-        // Send SMS if enabled
-        if ($notificationSettings['sms_notifications'] ?? false) {
-            $smsService = new \App\Services\SmsService();
-            $smsService->sendAppointmentCancellation($appointment);
-            $notifications[] = 'SMS';
-        }
+
 
         $message = 'Appointment cancelled successfully.';
         if (!empty($notifications)) {

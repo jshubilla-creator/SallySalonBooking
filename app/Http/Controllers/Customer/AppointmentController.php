@@ -127,18 +127,9 @@ class AppointmentController extends Controller
             'contact_email' => auth()->user()->email,
         ]);
 
-        // Send booking confirmation email and SMS
+        // Send booking confirmation email
         $appointment->load(['user', 'service', 'specialist']);
-        
-        // Send email
         \Mail::to($appointment->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
-        
-        // Send SMS if phone number exists
-        if ($appointment->user->phone) {
-            $smsService = new \App\Services\SmsService();
-            $message = "Hi {$appointment->user->name}! Your appointment for {$appointment->service->name} on {$appointment->appointment_date->format('M d, Y')} at {$appointment->start_time->format('g:i A')} has been booked and is pending confirmation.";
-            $smsService->sendSms($appointment->user->phone, $message);
-        }
 
         return redirect()->route('customer.dashboard')
             ->with('success', 'Appointment booked successfully!');

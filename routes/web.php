@@ -178,6 +178,7 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')
     Route::put('/profile/password', [App\Http\Controllers\Manager\ProfileController::class, 'password'])->name('profile.password');
     Route::delete('/profile', [App\Http\Controllers\Manager\ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/send-2fa-code', [App\Http\Controllers\Manager\ProfileController::class, 'send2FACode'])->name('profile.send-2fa-code');
+    Route::post('/profile/toggle-2fa', [App\Http\Controllers\Manager\ProfileController::class, 'toggle2FA'])->name('profile.toggle2fa');
     Route::get('/specialists/{id}/fetch', [App\Http\Controllers\Manager\SpecialistController::class, 'fetch'])
     ->name('specialists.fetch');
 });
