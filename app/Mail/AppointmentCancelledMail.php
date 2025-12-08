@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class AppointmentDeletedMail extends Mailable
+class AppointmentCancelledMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,9 +28,9 @@ class AppointmentDeletedMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Appointment Deleted Notice')
+        return $this->subject('Appointment Cancelled Notice')
                     ->from('build3vs@gmail.com', 'Sally Salon')
-                    ->markdown('emails.appointments.deleted')
+                    ->markdown('emails.appointments.cancelled')
                     ->with([
                         'appointment' => $this->appointment,
                         'reason' => $this->reason,
