@@ -1,37 +1,52 @@
-@component('mail::message')
-# 🗑️ Appointment Deleted
-
-Hello **{{ $appointment->user->name }}**,
-
-We’d like to inform you that your appointment for  
-**{{ $appointment->service->name }}**  
-on **{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('F d, Y - h:i A') }}**  
-has been **deleted** from our system.
-
----
-
-### 💬 Reason for Deletion
-> {{ $reason }}
-
----
-
-### Appointment Details
-- **Service:** {{ $appointment->service->name }}
-- **Specialist:** {{ $appointment->specialist->name }}
-- **Date:** {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('F d, Y') }}
-- **Time:** {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}
-- **Price:** ₱{{ number_format($appointment->total_price, 2) }}
-
----
-
-If this was a mistake or you’d like to rebook, feel free to set a new appointment below.
-
-@component('mail::button', ['url' => url('/customer/appointments/create')])
-Book Again
-@endcomponent
-
-Thank you for your understanding,  
-**Sally Salon Team**  
-📞 +63 912 345 6789  
-✉️ support@sallysalon.com
-@endcomponent
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Appointment Removed</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #ffc107; text-align: center;">🗑️ Appointment Removed from System</h1>
+    
+    <p>Hello <strong>{{ $appointment->user->name }}</strong>! 👋</p>
+    
+    <p>We'd like to inform you that your appointment for<br>
+    <strong>{{ $appointment->service->name }}</strong><br>
+    on <strong>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('F d, Y - h:i A') }}</strong><br>
+    has been <strong>removed</strong> from our system.</p>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+    
+    <h3 style="color: #ffc107;">💬 Reason for Removal</h3>
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+        <p style="margin: 0; color: #333; font-style: italic;">{{ $reason }}</p>
+    </div>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+    
+    <h3 style="color: #ffc107;">📋 Removed Appointment Details</h3>
+    <ul>
+        <li><strong>Service:</strong> {{ $appointment->service->name }}</li>
+        <li><strong>Specialist:</strong> {{ $appointment->specialist->name }}</li>
+        <li><strong>Date:</strong> {{ \Carbon\Carbon::parse($appointment->appointment_date)->format('F d, Y') }}</li>
+        <li><strong>Time:</strong> {{ \Carbon\Carbon::parse($appointment->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($appointment->end_time)->format('h:i A') }}</li>
+        <li><strong>Price:</strong> ₱{{ number_format($appointment->total_price, 2) }}</li>
+    </ul>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+    
+    <p>If this was unexpected or you'd like to <strong>book again</strong>, we're here to help! 🤝<br>
+    Our team is ready to assist you with a new appointment that fits your schedule perfectly! ✨</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ url('/customer/appointments/create') }}" style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Book Again</a>
+    </div>
+    
+    <p style="text-align: center;">Thank you for your understanding! 💙<br>
+    <strong>Sally Salon Team</strong></p>
+    
+    <p style="text-align: center; color: #666; font-size: 14px;">
+        📞 {{ config('app.salon_phone_number', '+63 912 345 6789') }}<br>
+        ✉️ {{ config('mail.from.address') }}
+    </p>
+</body>
+</html>

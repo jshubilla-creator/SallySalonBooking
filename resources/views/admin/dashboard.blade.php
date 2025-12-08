@@ -8,7 +8,7 @@
     <!-- Stats Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Users -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
         </div>
 
         <!-- Total Appointments -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -46,7 +46,7 @@
         </div>
 
             <!-- Total Revenue -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -71,7 +71,7 @@
 
 
         <!-- Active Services -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -92,7 +92,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- System Status -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">System Status</h3>
                 <div class="space-y-4">
@@ -121,11 +121,11 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <a href="{{ route('admin.staff.index') }}" class="relative group bg-blue-50 p-6 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('admin.staff.index') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-blue-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('admin.analytics') }}" class="relative group bg-purple-50 p-6 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    <a href="{{ route('admin.analytics') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-purple-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('admin.settings') }}" class="relative group bg-gray-50 p-6 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    <a href="{{ route('admin.settings') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-gray-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,21 +167,6 @@
                             <p class="mt-2 text-sm text-gray-500">Configure system preferences</p>
                         </div>
                     </a>
-
-                    <!-- <a href="{{ route('manager.dashboard') }}" class="relative group bg-green-50 p-6 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <div>
-                            <span class="rounded-lg inline-flex p-3 bg-green-500 text-white">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="mt-4">
-                            <h3 class="text-lg font-medium text-gray-900">Manager Panel</h3>
-                            <p class="mt-2 text-sm text-gray-500">Switch to manager view</p>
-                        </div>
-                    </a> -->
                 </div>
             </div>
         </div>

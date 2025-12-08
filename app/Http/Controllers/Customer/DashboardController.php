@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-
+        
         // Redirect managers and admins to their own dashboards
         if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
@@ -23,9 +23,12 @@ class DashboardController extends Controller
         $appointments = Appointment::with(['service', 'specialist'])
             ->where('user_id', $user->id)
             ->orderBy('appointment_date', 'desc')
-            ->limit(5)
+            //->limit(10)
             ->get();
+        
+            // ✅ Count all appointments for condition
+        $appointmentsCount = Appointment::where('user_id', $user->id)->count();
 
-        return view('customer.dashboard', compact('appointments'));
+        return view('customer.dashboard', compact('appointments', 'appointmentsCount'));
     }
 }

@@ -8,7 +8,10 @@
             </div>
             <div class="flex space-x-3">
                 <a href="{{ route('manager.inventory.create') }}"
-                   class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
+                   class="flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
                     Add New Item
                 </a>
             </div>
@@ -16,26 +19,39 @@
     </div>
 
     <!-- Low Stock Alert -->
-    @if($inventory->where('quantity', '<=', 'min_quantity')->count() > 0)
-        <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">Low Stock Alert</h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <p>{{ $inventory->where('quantity', '<=', 'min_quantity')->count() }} item(s) are running low on stock.</p>
-                    </div>
-                </div>
+    @if ($lowStockCount > 0)
+    <div 
+        x-data="{ show: true }"
+        x-show="show"
+        class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4"
+    >
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 
+                          1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 
+                          0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
             </div>
+            <div class="ml-3 flex-1">
+                <h3 class="text-sm font-medium text-red-800">⚠️ Low Stock Alert</h3>
+                <p class="mt-2 text-sm text-red-700">
+                    {{ $lowStockCount }} item(s) are running low on stock.
+                </p>
+            </div>
+            <button 
+                @click="show = false"
+                class="ml-4 text-red-600 hover:text-red-800 text-sm font-semibold"
+            >
+                ✕
+            </button>
         </div>
-    @endif
+    </div>
+@endif
 
     <!-- Search and Filters -->
-    <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg p-6 mb-6">
         <form method="GET" action="{{ route('manager.inventory.index') }}" class="space-y-4">
             <!-- Search Bar -->
             <div>
@@ -62,17 +78,20 @@
                     </select>
                 </div>
 
+                <!-- Status Filter -->
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                     <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">All Statuses</option>
+                        <option value="all" {{ request('status') === 'all' ? 'selected' : '' }}>All Statuses</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
 
+                <!-- Low Stock Checkbox -->
+                 
                 <div class="flex items-end">
-                    <label class="flex items-center">
+                    <label class="inline-flex items-center">
                         <input type="checkbox"
                                name="low_stock"
                                value="1"
@@ -82,13 +101,14 @@
                     </label>
                 </div>
 
+                <!-- Search & Filter Button -->
                 <div class="flex items-end space-x-2">
                     <button type="submit"
-                            class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
+                            class="flex-grow bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
                         Search & Filter
                     </button>
                     <a href="{{ route('manager.inventory.index') }}"
-                       class="flex-1 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200 text-center">
+                       class="flex-grow bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-200 text-center">
                         Clear
                     </a>
                 </div>
@@ -97,7 +117,7 @@
     </div>
 
     <!-- Inventory Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:p-6">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -113,7 +133,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 divide-y divide-gray-200">
                         @forelse($inventory as $item)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -148,7 +168,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     @if($item->unit_price)
-                                        ${{ number_format($item->unit_price, 2) }}
+                                        ₱{{ number_format($item->unit_price, 2) }}
                                     @else
                                         -
                                     @endif
@@ -173,6 +193,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex flex-col sm:flex-row gap-2">
+
                                         <a href="{{ route('manager.inventory.show', $item) }}"
                                            class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 hover:text-green-700 transition-colors duration-200">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

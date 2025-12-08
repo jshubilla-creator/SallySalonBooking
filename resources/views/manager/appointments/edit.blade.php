@@ -1,7 +1,7 @@
 <x-manager-layout>
     <h1 class="text-2xl font-bold mb-4">Edit Appointment #{{ $appointment->id }}</h1>
 
-    <form method="POST" action="{{ route('manager.appointments.update', $appointment) }}" class="bg-white shadow rounded-lg p-6 space-y-4">
+    <form method="POST" action="{{ route('manager.appointments.update', $appointment) }}" class="bg-blue-100 shadow rounded-lg p-6 space-y-4">
         @csrf
         @method('PUT')
 

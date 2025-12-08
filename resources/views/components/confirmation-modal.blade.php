@@ -1,6 +1,6 @@
 <!-- Confirmation Modal -->
 <div id="confirmationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
         <div class="mt-3 text-center">
             <!-- Icon -->
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
@@ -35,17 +35,21 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('confirmationModal');
-    const title = document.getElementById('modalTitle');
-    const message = document.getElementById('modalMessage');
-    const cancelBtn = document.getElementById('modalCancel');
-    const confirmBtn = document.getElementById('modalConfirm');
-
+// Initialize modal immediately
+(function() {
     let confirmCallback = null;
 
-    // Show modal function
+    // Show modal function - available immediately
     window.showConfirmation = function(titleText, messageText, callback) {
+        const modal = document.getElementById('confirmationModal');
+        const title = document.getElementById('modalTitle');
+        const message = document.getElementById('modalMessage');
+        
+        if (!modal || !title || !message) {
+            console.error('Modal elements not found');
+            return;
+        }
+        
         title.textContent = titleText;
         message.textContent = messageText;
         confirmCallback = callback;
@@ -54,33 +58,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Hide modal function
     function hideModal() {
-        modal.classList.add('hidden');
+        const modal = document.getElementById('confirmationModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
         confirmCallback = null;
     }
 
-    // Cancel button
-    cancelBtn.addEventListener('click', hideModal);
+    // Setup event listeners when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('confirmationModal');
+        const cancelBtn = document.getElementById('modalCancel');
+        const confirmBtn = document.getElementById('modalConfirm');
 
-    // Confirm button
-    confirmBtn.addEventListener('click', function() {
-        if (confirmCallback) {
-            confirmCallback();
+        if (!modal || !cancelBtn || !confirmBtn) {
+            console.error('Modal elements not found in DOM');
+            return;
         }
-        hideModal();
-    });
 
-    // Close on backdrop click
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
+        // Cancel button
+        cancelBtn.addEventListener('click', hideModal);
+
+        // Confirm button
+        confirmBtn.addEventListener('click', function() {
+            if (confirmCallback) {
+                confirmCallback();
+            }
             hideModal();
-        }
-    });
+        });
 
-    // Close on escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-            hideModal();
-        }
+        // Close on backdrop click
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                hideModal();
+            }
+        });
     });
-});
+})();
 </script>

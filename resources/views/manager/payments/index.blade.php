@@ -3,7 +3,7 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 sm:mb-0">Payments</h1>
     </div>
 
-    <div class="bg-white shadow-md rounded-xl border border-gray-100 overflow-x-auto">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow-md rounded-xl border border-gray-100 overflow-x-auto">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
@@ -18,14 +18,19 @@
                 </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-100 bg-white">
+            <tbody class="divide-y divide-gray-100 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
                 @forelse ($payments as $payment)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $payment->id }}</td>
                         <td class="px-4 sm:px-6 py-4 text-sm font-medium text-gray-900">{{ $payment->user->name ?? 'N/A' }}</td>
 
                         <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $payment->service->name ?? 'N/A' }}</td>
-                        <td class="hidden lg:table-cell px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $payment->payment_method ?? '—' }}</td>
+                        <td class="hidden lg:table-cell px-4 sm:px-6 py-4 text-sm text-gray-700">
+                            {{ $payment->payment_method ?? '—' }}
+                            @if($payment->paymentTransactions->count() > 0)
+                                <br><span class="text-xs text-blue-600">Online: {{ $payment->paymentTransactions->first()->payment_gateway }}</span>
+                            @endif
+                        </td>
 
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             @if ($payment->payment_status === 'paid')
@@ -57,20 +62,18 @@
                                 </button>
                             @else
                                 <button onclick="openEditModal({{ $payment->id }}, {{ $payment->amount_paid }})"
-                                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition">
+                                    class="flex items-center justify-center inline-flex px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
                                     Edit
                                 </button>
                             @endif
 
-                            <form method="POST" action="{{ route('manager.payments.delete', $payment->id) }}" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    onclick="return confirm('Are you sure you want to delete this payment record?')"
-                                    class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition">
-                                    Delete
-                                </button>
-                            </form>
+                            <button onclick="openDeleteModal({{ $payment->id }})"
+                                class="px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -86,7 +89,7 @@
 
     <!-- Record Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Record Customer Payment</h2>
             <form id="paymentForm" method="POST">
                 @csrf
@@ -113,7 +116,7 @@
 
     <!-- Edit Payment Modal -->
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Payment</h2>
             <form id="editForm" method="POST">
                 @csrf
@@ -140,6 +143,29 @@
         </div>
     </div>
 
+    <!-- Delete Payment Modal -->
+    <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
+        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Delete Payment Record</h2>
+            <p class="text-gray-600 mb-6">Are you sure you want to delete this payment record? This will reset the payment status to pending.</p>
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex justify-end gap-3">
+                    <button type="button"
+                        onclick="closeDeleteModal()"
+                        class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-red-600 text-white font-medium rounded-lg shadow hover:bg-red-700 focus:ring-2 focus:ring-red-400 transition">
+                        Delete Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openPaymentModal(id) {
             document.getElementById('paymentModal').classList.remove('hidden');
@@ -158,6 +184,15 @@
 
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
+        }
+
+        function openDeleteModal(id) {
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteForm').action = `/manager/payments/${id}/delete`;
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
         }
     </script>
 

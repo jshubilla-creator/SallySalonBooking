@@ -11,7 +11,7 @@
             <!-- Stats Overview -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- Total Users -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -28,7 +28,7 @@
                 </div>
 
                 <!-- Total Appointments -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -44,7 +44,7 @@
                     </div>
                 </div>
         <!-- Total Revenue -->
-        <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200 p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -71,7 +71,7 @@
 
 
                 <!-- Active Services -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -91,7 +91,7 @@
             <!-- Charts Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <!-- Revenue Chart -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Revenue Trend</h3>
                     </div>
@@ -101,7 +101,7 @@
                 </div>
 
                 <!-- Appointment Status Chart -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Appointment Status</h3>
                     </div>
@@ -114,7 +114,7 @@
             <!-- Additional Analytics -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <!-- Top Services -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Top Services</h3>
                     </div>
@@ -124,7 +124,7 @@
                 </div>
 
                 <!-- Customer Feedback -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Customer Feedback</h3>
                     </div>
@@ -164,7 +164,7 @@
             <!-- Additional Charts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <!-- Customer Growth Chart -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Customer Growth</h3>
                     </div>
@@ -174,7 +174,7 @@
                 </div>
 
                 <!-- Specialist Performance Chart -->
-                <div class="bg-white rounded-lg shadow-md border border-gray-200">
+                <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-900">Specialist Performance</h3>
                     </div>
@@ -185,7 +185,7 @@
             </div>
 
             <!-- Recent Activity -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
                 </div>

@@ -9,7 +9,7 @@
         <!-- Specialists Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($specialists as $specialist)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                <div class="bg-blue-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
                     <!-- Profile Image -->
                     <div class="relative">
                         @if($specialist->profile_image)
@@ -116,7 +116,7 @@
     <!-- Specialist Details Modal -->
     <div id="specialistModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50" onclick="closeSpecialistModal()">
         <div class="flex items-center justify-center min-h-screen p-4" onclick="event.stopPropagation()">
-            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-blue-50 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">Specialist Profile</h3>
                 </div>
@@ -138,6 +138,16 @@
     </div>
 
     <script>
+        const dayNames = {
+        0: "Sunday",
+        1: "Monday",
+        2: "Tuesday",
+        3: "Wednesday",
+        4: "Thursday",
+        5: "Friday",
+        6: "Saturday"
+    };
+        
         function viewSpecialistDetails(specialistId) {
             // Show loading state
             document.getElementById('specialistDetails').innerHTML = `
@@ -170,7 +180,16 @@
                                     <div class="flex items-center space-x-4 mt-2">
                                         <span class="text-sm text-gray-500">📧 ${data.email}</span>
                                         <span class="text-sm text-gray-500">📞 ${data.phone}</span>
+                                        ${data.is_busy_now ? '<span class="ml-3 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Busy now</span>' : ''}
                                     </div>
+
+                                    ${data.busy_reason ? `
+                                        <div class="mt-3 p-3 bg-red-50 border border-red-100 rounded-md text-sm">
+                                            <div class="font-medium text-red-800">Currently with: ${data.busy_reason.service || 'Appointment'}</div>
+                                            <div class="text-gray-600">Customer: ${data.busy_reason.customer || 'Private'}</div>
+                                            <div class="text-gray-600">Time: ${data.busy_reason.start_time || ''}${data.busy_reason.end_time ? ' - ' + data.busy_reason.end_time : ''}</div>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
 
@@ -191,28 +210,64 @@
                             </div>
 
                             <div>
-                                <h5 class="text-lg font-medium text-gray-900 mb-2">Working Hours</h5>
-                                <div class="grid grid-cols-2 gap-2 text-sm">
-                                    ${data.working_hours ? Object.entries(data.working_hours).map(([day, hours]) => {
-                                        let hoursText = 'Closed';
-                                        if (hours && typeof hours === 'object') {
-                                            if (hours.start_time && hours.end_time) {
-                                                hoursText = `${hours.start_time} - ${hours.end_time}`;
-                                            } else if (hours.start_time) {
-                                                hoursText = `From ${hours.start_time}`;
-                                            }
-                                        } else if (hours && typeof hours === 'string') {
-                                            hoursText = hours;
-                                        }
-                                        return `
-                                            <div class="flex justify-between">
-                                                <span class="font-medium">${day.charAt(0).toUpperCase() + day.slice(1)}:</span>
-                                                <span class="text-gray-600">${hoursText}</span>
+    <h5 class="text-lg font-medium text-gray-900 mb-2">Working Hours</h5>
+    <div class="grid grid-cols-2 gap-2 text-sm">
+        ${(() => {
+            const daysOrder = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+            const dayLabels = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            const wh = data.working_hours || {};
+            return daysOrder.map((day, idx) => {
+                const dayData = wh[day] || {};
+                const isEnabled = !!dayData.enabled;
+                let hoursText = 'Closed';
+                if (isEnabled) {
+                    if (dayData.start && dayData.end) {
+                        hoursText = `${dayData.start} - ${dayData.end}`;
+                    } else {
+                        hoursText = 'Available';
+                    }
+                }
+                return `
+                    <div class="flex justify-start space-x-2">
+                        <span class="font-medium">${dayLabels[idx]}:</span>
+                        <span class="text-gray-600">${hoursText}</span>
+                    </div>
+                `;
+            }).join('');
+        })()}
+    </div>
+
+    ${data.next_appointment ? `
+        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-100 rounded-lg text-sm">
+            <strong>Upcoming:</strong> ${data.next_appointment.service || 'Appointment'} on ${data.next_appointment.date} ${data.next_appointment.start_time ? 'at ' + data.next_appointment.start_time : ''} (${data.next_appointment.status})
+        </div>
+    ` : ''}
+</div>
+
+                            ${data.feedback && data.feedback.length > 0 ? `
+                                <div>
+                                    <h5 class="text-lg font-medium text-gray-900 mb-3">Customer Reviews</h5>
+                                    <div class="space-y-3">
+                                        ${data.feedback.map(review => `
+                                            <div class="bg-gray-50 p-3 rounded-lg">
+                                                <div class="flex items-center space-x-2 mb-2">
+                                                    <div class="flex text-yellow-400">
+                                                        ${Array.from({length: 5}, (_, i) => 
+                                                            i < review.rating 
+                                                                ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
+                                                                : '<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
+                                                        ).join('')}
+                                                    </div>
+                                                    <span class="text-sm font-medium">${review.user_name}</span>
+                                                    <span class="text-sm text-gray-500">${review.created_at}</span>
+                                                </div>
+                                                <p class="text-sm text-gray-700">${review.comment}</p>
                                             </div>
-                                        `;
-                                    }).join('') : '<p class="text-gray-500">Working hours not specified</p>'}
+                                        `).join('')}
+                                    </div>
                                 </div>
-                            </div>
+                            ` : ''}
+
                         </div>
                     `;
 

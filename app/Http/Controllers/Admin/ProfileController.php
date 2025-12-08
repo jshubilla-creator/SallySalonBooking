@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -28,13 +29,48 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Handle 2FA toggle separately
+        if ($request->has('two_factor_enabled') && !$request->has('name')) {
+            $enabled = $request->boolean('two_factor_enabled');
+            
+            if ($enabled && !$user->phone) {
+                return back()->withErrors(['phone' => 'Phone number is required to enable 2FA.']);
+            }
+            
+            $user->update(['two_factor_enabled' => $enabled]);
+            
+            if (!$enabled) {
+                $user->resetTwoFactorCode();
+            }
+            
+            $message = $enabled ? '2FA has been enabled for your account.' : '2FA has been disabled for your account.';
+            return back()->with('success', $message);
         }
 
-        $request->user()->save();
+        // Handle regular profile update
+        $user->fill($request->validated());
+
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $user->profile_picture = $path;
+        }
+
+        // Handle 2FA toggle for regular updates
+        $user->two_factor_enabled = $request->has('two_factor_enabled');
+        if (!$user->two_factor_enabled) {
+            $user->resetTwoFactorCode();
+        }
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('admin.profile.edit')->with('status', 'profile-updated');
     }
@@ -47,9 +83,20 @@ class ProfileController extends Controller
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
             'password' => ['required', 'confirmed', 'min:8'],
+            'two_factor_code' => $request->user()->two_factor_enabled ? ['required', 'digits:6'] : [],
         ]);
 
-        $request->user()->update([
+        $user = $request->user();
+        
+        // Verify 2FA if enabled
+        if ($user->two_factor_enabled) {
+            if (!$user->isTwoFactorCodeValid($validated['two_factor_code'])) {
+                return back()->withErrors(['two_factor_code' => 'Invalid or expired verification code.']);
+            }
+            $user->resetTwoFactorCode();
+        }
+
+        $user->update([
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -63,9 +110,17 @@ class ProfileController extends Controller
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
+            'two_factor_code' => $request->user()->two_factor_enabled ? ['required', 'digits:6'] : [],
         ]);
 
         $user = $request->user();
+        
+        // Verify 2FA if enabled
+        if ($user->two_factor_enabled) {
+            if (!$user->isTwoFactorCodeValid($request->two_factor_code)) {
+                return back()->withErrors(['two_factor_code' => 'Invalid or expired verification code.']);
+            }
+        }
 
         Auth::logout();
 
@@ -75,5 +130,22 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function send2FACode(Request $request)
+    {
+        $user = $request->user();
+        
+        if (!$user->two_factor_enabled) {
+            return response()->json(['success' => false, 'message' => '2FA not enabled']);
+        }
+        
+        $user->generateTwoFactorCode();
+        
+        // SMS service removed - using email verification instead
+        // Code is sent via email through User model's sendTwoFactorEmail() method
+        $success = true; // Email is sent automatically by generateTwoFactorCode()
+        
+        return response()->json(['success' => $success]);
     }
 }

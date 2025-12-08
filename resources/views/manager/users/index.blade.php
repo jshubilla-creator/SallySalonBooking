@@ -10,7 +10,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg p-6 mb-6">
         <form method="GET" action="{{ route('manager.users.index') }}" class="space-y-4">
             <!-- Search Bar -->
             <div>
@@ -52,7 +52,7 @@
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:p-6">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -65,7 +65,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 divide-y divide-gray-200">
                         @forelse($users as $user)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -80,7 +80,14 @@
                                             @endif
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                            <div class="flex items-center">
+                                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                @if($user->is_banned)
+                                                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        Banned
+                                                    </span>
+                                                @endif
+                                            </div>
                                             <div class="text-sm text-gray-500">{{ $user->email }}</div>
                                         </div>
                                     </div>
@@ -118,13 +125,35 @@
                                             </svg>
                                             View
                                         </a>
-                                        <a href="{{ route('manager.appointments.index') }}?user={{ $user->id }}"
+                                        <a href="{{ route('manager.appointments.index') }}?user_id={{ $user->id }}"
                                            class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 hover:text-blue-700 transition-colors duration-200">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                             </svg>
                                             Appointments
                                         </a>
+                                        @if($user->is_banned)
+                                            <form method="POST" action="{{ route('manager.users.unban', $user) }}" class="inline">
+                                                @csrf
+                                                <button type="submit"
+                                                        class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded-md hover:bg-green-100 hover:text-green-700 transition-colors duration-200"
+                                                        onclick="return confirm('Are you sure you want to unban this user?')">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    Unban
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button"
+                                                    onclick="openBanModal({{ $user->id }}, '{{ $user->name }}')"
+                                                    class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 hover:text-red-700 transition-colors duration-200">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                                </svg>
+                                                Ban
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -147,4 +176,45 @@
             @endif
         </div>
     </div>
+
+    <!-- Ban Modal -->
+    <div id="banModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-blue-50">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg font-medium text-gray-900">Ban User</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">Are you sure you want to ban <span id="banUserName" class="font-medium"></span>?</p>
+                    <form id="banForm" method="POST" class="mt-4">
+                        @csrf
+                        <textarea name="ban_reason" placeholder="Reason for ban..." required
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                    </form>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="confirmBan" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                        Ban User
+                    </button>
+                    <button onclick="closeBanModal()" class="mt-3 px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openBanModal(userId, userName) {
+            document.getElementById('banUserName').textContent = userName;
+            document.getElementById('banForm').action = `/manager/users/${userId}/ban`;
+            document.getElementById('banModal').classList.remove('hidden');
+        }
+
+        function closeBanModal() {
+            document.getElementById('banModal').classList.add('hidden');
+        }
+
+        document.getElementById('confirmBan').addEventListener('click', function() {
+            document.getElementById('banForm').submit();
+        });
+    </script>
 </x-manager-layout>

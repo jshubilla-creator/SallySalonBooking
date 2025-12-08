@@ -17,7 +17,7 @@
         <form action="{{ route('manager.specialists.store') }}" method="POST" class="space-y-6">
             @csrf
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-blue-100 shadow rounded-lg p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Name -->
                     <div>

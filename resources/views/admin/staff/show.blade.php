@@ -9,12 +9,11 @@
                         <p class="mt-2 text-lg text-gray-600">View staff member information</p>
                     </div>
                     <div class="flex space-x-3">
-                        <a href="{{ route('admin.staff.edit', $staff) }}"
-                           class="px-4 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            Edit Staff Member
-                        </a>
                         <a href="{{ route('admin.staff.index') }}"
-                           class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                           class="flex items-center justify-center px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
                             Back to Staff
                         </a>
                     </div>
@@ -22,7 +21,7 @@
             </div>
 
             <!-- Staff Information -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Personal Information</h2>
                 </div>
@@ -67,7 +66,7 @@
             </div>
 
             <!-- Account Information -->
-            <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="mt-6 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Account Information</h2>
                 </div>
@@ -99,29 +98,75 @@
             </div>
 
             <!-- Actions -->
-            <div class="mt-6 bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="mt-6 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Actions</h2>
                 </div>
                 <div class="p-6">
                     <div class="flex space-x-4">
                         <a href="{{ route('admin.staff.edit', $staff) }}"
-                           class="px-4 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="flex items-center justify-center px-4 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
                             Edit Staff Member
                         </a>
-                        <form method="POST" action="{{ route('admin.staff.destroy', $staff) }}"
-                              class="inline"
-                              onsubmit="return confirm('Are you sure you want to delete this staff member? This action cannot be undone.')">
+                        <button type="button"
+                                onclick="openDeleteModal()"
+                                class="flex items-center justify-center px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            Delete Staff Member
+                        </button>
+                        <form id="delete-form" method="POST" action="{{ route('admin.staff.destroy', $staff) }}" class="hidden">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                    class="px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
-                                Delete Staff Member
-                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-blue-50 rounded-lg shadow-lg max-w-md w-full">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Delete Staff Member</h3>
+            </div>
+            <div class="px-6 py-4">
+                <p class="text-gray-700">Are you sure you want to delete staff member "{{ $staff->name }}"? This action cannot be undone.</p>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="button" onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            document.getElementById('delete-form').submit();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
 </x-admin-layout>

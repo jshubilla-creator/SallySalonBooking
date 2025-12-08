@@ -3,6 +3,9 @@ use Carbon\Carbon;
 
 protected function schedule(Schedule $schedule)
 {
+    // Schedule appointment reminders to run daily at 9 AM
+    $schedule->command('appointments:send-reminders')->dailyAt('09:00');
+
     // Target expiry datetime (Manila timezone)
     $expiry = Carbon::parse('2025-10-24 00:00:00', 'Asia/Manila');
     $now = Carbon::now('Asia/Manila');

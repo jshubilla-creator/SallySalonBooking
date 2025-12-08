@@ -1,5 +1,5 @@
 <x-customer-layout>
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen py-8">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
@@ -9,7 +9,7 @@
 
         <!-- Appointment Details -->
         @if($appointment && $appointment->service && $appointment->specialist)
-            <div class="bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200">
+            <div class="bg-blue-100 rounded-lg shadow-md p-6 mb-8 border border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Appointment Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -38,7 +38,7 @@
         @endif
 
         <!-- Feedback Form -->
-        <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div class="bg-blue-100 rounded-lg shadow-md p-6 border border-gray-200">
             <form method="POST" action="{{ route('customer.feedback.store') }}">
                 @csrf
                 <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
@@ -97,7 +97,7 @@
                 <!-- Submit Buttons -->
                 <div class="flex items-center justify-end space-x-4">
                     <a href="{{ route('customer.feedback.index') }}"
-                       class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                       class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-blue-100 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
                         Cancel
                     </a>
                     <button type="submit"

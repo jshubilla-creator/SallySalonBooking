@@ -8,14 +8,31 @@
 
         <div class="space-y-6">
             <!-- Profile Information -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Profile Information</h2>
                 </div>
                 <div class="p-6">
-                    <form method="post" action="{{ route('customer.profile.update') }}" class="space-y-6">
+                    <form method="post" action="{{ route('customer.profile.update') }}" class="space-y-6" enctype="multipart/form-data">
                         @csrf
                         @method('patch')
+
+                        <!-- Profile Picture -->
+                            <div class="flex items-center space-x-4">
+                                <img id="profile_preview" src="{{ $user->profile_picture_url ?: 'https://via.placeholder.com/80x80/e5e7eb/6b7280?text=No+Image' }}" alt="Profile Picture" class="rounded-full h-20 w-20 object-cover border-2 border-gray-200">
+                                <div>
+                                    <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+                                    <input type="file"
+                                           name="profile_picture"
+                                           id="profile_picture"
+                                           accept="image/*"
+                                           onchange="previewImage(this)"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('profile_picture') border-red-500 @enderror">
+                                    @error('profile_picture')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
 
                         <!-- Name -->
                         <div>
@@ -111,7 +128,7 @@
             </div>
 
             <!-- Change Password -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Change Password</h2>
                 </div>
@@ -123,11 +140,7 @@
                         <!-- Current Password -->
                         <div>
                             <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                            <input type="password"
-                                   name="current_password"
-                                   id="current_password"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('current_password') border-red-500 @enderror"
-                                   required>
+                            <x-password-input name="current_password" id="current_password" class="w-full @error('current_password') border-red-500 @enderror" required />
                             @error('current_password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -136,11 +149,7 @@
                         <!-- New Password -->
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                            <input type="password"
-                                   name="password"
-                                   id="password"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('password') border-red-500 @enderror"
-                                   required>
+                            <x-password-input name="password" id="password" class="w-full @error('password') border-red-500 @enderror" required />
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -149,12 +158,28 @@
                         <!-- Confirm Password -->
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                            <input type="password"
-                                   name="password_confirmation"
-                                   id="password_confirmation"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                   required>
+                            <x-password-input name="password_confirmation" id="password_confirmation" class="w-full" required />
                         </div>
+
+                        @if($user->two_factor_enabled)
+                        <!-- 2FA Code -->
+                        <div>
+                            <label for="two_factor_code_password" class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
+                            <div class="flex space-x-2">
+                                <input type="text"
+                                       name="two_factor_code"
+                                       id="two_factor_code_password"
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('two_factor_code') border-red-500 @enderror"
+                                       placeholder="Enter 6-digit code"
+                                       maxlength="6"
+                                       required>
+                                <button type="button" onclick="sendPasswordCode()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Send Email Code</button>
+                            </div>
+                            @error('two_factor_code')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        @endif
 
                         <!-- Save Button -->
                         <div class="flex justify-end">
@@ -167,8 +192,37 @@
                 </div>
             </div>
 
+            <!-- Two-Factor Authentication -->
+            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900">🔐 Two-Factor Authentication</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Email Verification</h3>
+                            <p class="text-sm text-gray-600">
+                                @if($user->two_factor_enabled)
+                                    ✅ 2FA is enabled. You'll receive email codes when logging in.
+                                @else
+                                    Add an extra layer of security to your account with email verification.
+                                @endif
+                            </p>
+                        </div>
+                        <form method="post" action="{{ route('customer.profile.toggle-2fa') }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="two_factor_enabled" value="{{ $user->two_factor_enabled ? '0' : '1' }}">
+                            <button type="submit"
+                                    class="px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 {{ $user->two_factor_enabled ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-green-600 text-white hover:bg-green-700' }}">
+                                {{ $user->two_factor_enabled ? 'Disable 2FA' : 'Enable 2FA' }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Delete Account -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Delete Account</h2>
                 </div>
@@ -183,17 +237,32 @@
 
                         <!-- Password Confirmation -->
                         <div>
-                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password"
-                                   name="password"
-                                   id="password"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('password') border-red-500 @enderror"
-                                   placeholder="Enter your password to confirm"
-                                   required>
+                            <label for="delete_password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                            <x-password-input name="password" id="delete_password" placeholder="Enter your password to confirm" class="w-full @error('password') border-red-500 @enderror" required />
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        @if($user->two_factor_enabled)
+                        <!-- 2FA Code -->
+                        <div>
+                            <label for="two_factor_code_delete" class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
+                            <div class="flex space-x-2">
+                                <input type="text"
+                                       name="two_factor_code"
+                                       id="two_factor_code_delete"
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('two_factor_code') border-red-500 @enderror"
+                                       placeholder="Enter 6-digit code"
+                                       maxlength="6"
+                                       required>
+                                <button type="button" onclick="sendDeleteCode()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Send Email Code</button>
+                            </div>
+                            @error('two_factor_code')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        @endif
 
                         <!-- Delete Button -->
                         <div class="flex justify-end">
@@ -208,4 +277,55 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('profile_preview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function sendPasswordCode() {
+            fetch('{{ route('customer.profile.send-2fa-code') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ action: 'password_change' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Verification code sent to your email!');
+                } else {
+                    alert('Failed to send code. Please try again.');
+                }
+            });
+        }
+
+        function sendDeleteCode() {
+            fetch('{{ route('customer.profile.send-2fa-code') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ action: 'account_deletion' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Verification code sent to your email!');
+                } else {
+                    alert('Failed to send code. Please try again.');
+                }
+            });
+        }
+    </script>
 </x-customer-layout>

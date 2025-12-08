@@ -7,18 +7,21 @@
                 <p class="mt-2 text-lg text-gray-600">Update {{ $specialist->name }}</p>
             </div>
             <a href="{{ route('manager.specialists.index') }}"
-               class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+               class="flex items-center justify-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
                 Back to Specialists
             </a>
         </div>
     </div>
 
-    <div class="max-w-4xl">
+    <div class="max-w-4xl mx-auto">
         <form action="{{ route('manager.specialists.update', $specialist) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Name -->
                     <div>
@@ -181,11 +184,13 @@
                                    name="is_available"
                                    id="is_available"
                                    value="1"
-                                   {{ old('is_available', $specialist->is_available) ? 'checked' : '' }}
+                                   {{ $specialist->is_available ? 'checked' : '' }}
+                                   onchange="this.form.querySelector('input[name=availability_changed]').value='1'"
                                    class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                             <label for="is_available" class="ml-2 text-sm text-gray-700">
                                 Available (specialist can take appointments)
                             </label>
+                            <input type="hidden" name="availability_changed" value="0">
                         </div>
                     </div>
                 </div>

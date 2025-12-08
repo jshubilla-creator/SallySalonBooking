@@ -19,48 +19,69 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
+        // Debug log all request data
+        \Log::info('All Request Data:', $request->all());
+        
+        // Start with base query including relationships
         $query = Appointment::with(['user', 'service', 'specialist']);
 
+        // Basic filters
+        if ($request->filled('specialist_id')) {
+            \Log::info('Filtering by specialist_id: ' . $request->specialist_id);
+            $query->where('specialist_id', $request->specialist_id);
+        }
+
+        // Filter by user (accept both user_id and legacy user param)
+        if ($request->filled('user_id') || $request->filled('user')) {
+            $userId = $request->user_id ?? $request->user;
+            \Log::info('Filtering by user_id: ' . $userId);
+            $query->where('user_id', $userId);
+        }
+
+        if ($request->filled('status')) {
+            \Log::info('Filtering by status: ' . $request->status);
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('date')) {
+            \Log::info('Filtering by date: ' . $request->date);
+            $query->whereDate('appointment_date', $request->date);
+        }
+
         // Search functionality
-        if ($request->has('search') && $request->search !== '') {
+        if ($request->filled('search')) {
             $search = $request->search;
+            \Log::info('Searching for: ' . $search);
+
+            // Note: removed specialist name from the free-text search per request.
             $query->where(function($q) use ($search) {
-                $q->whereHas('user', function($userQuery) use ($search) {
-                    $userQuery->where('name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%");
+                $q->whereHas('user', function($userQ) use ($search) {
+                    $userQ->where('name', 'like', '%' . $search . '%')
+                         ->orWhere('email', 'like', '%' . $search . '%');
                 })
-                ->orWhereHas('service', function($serviceQuery) use ($search) {
-                    $serviceQuery->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('specialist', function($specialistQuery) use ($search) {
-                    $specialistQuery->where('name', 'like', "%{$search}%");
+                ->orWhereHas('service', function($serviceQ) use ($search) {
+                    $serviceQ->where('name', 'like', '%' . $search . '%');
                 });
             });
         }
 
-        // Filter by status
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('status', $request->status);
-        }
+        // Log the query before execution
+        \Log::info('Query SQL: ' . $query->toSql());
+        \Log::info('Query Bindings:', $query->getBindings());
 
-        // Filter by date
-        if ($request->has('date') && $request->date !== '') {
-            $query->whereDate('appointment_date', $request->date);
-        }
+        // Execute query - order by creation date to show newest appointments first
+        $appointments = $query->latest('created_at')->paginate(10);
+        
+        // Log result count
+        \Log::info('Results count: ' . $appointments->count());
 
-        // Filter by specialist
-        if ($request->has('specialist_id') && $request->specialist_id !== '') {
-            $query->where('specialist_id', $request->specialist_id);
-        }
-
-        $appointments = $query->orderBy('appointment_date', 'desc')
-            ->orderBy('start_time', 'desc')
-            ->paginate(10);
-
-        $specialists = Specialist::available()->get();
+        // Get statuses and specialists for dropdowns
         $statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'rescheduled'];
+        $specialists = \App\Models\Specialist::orderBy('name')->get();
 
-        return view('manager.appointments.index', compact('appointments', 'specialists', 'statuses'));
+        \Log::info('Available Specialists: ', $specialists->pluck('name', 'id')->toArray());
+
+        return view('manager.appointments.index', compact('appointments', 'statuses', 'specialists'));
     }
 
     public function show(Appointment $appointment)
@@ -76,7 +97,7 @@ class AppointmentController extends Controller
 
     // Optional: kung gusto mong may dropdowns sa edit form
     $services = \App\Models\Service::all();
-    $specialists = \App\Models\Specialist::available()->get();
+    $specialists = \App\Models\Specialist::available();
     $statuses = ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'rescheduled'];
 
     return view('manager.appointments.edit', compact('appointment', 'services', 'specialists', 'statuses'));
@@ -88,12 +109,35 @@ class AppointmentController extends Controller
         $request->validate([
             'status' => 'required|in:pending,confirmed,in_progress,completed,cancelled,rescheduled',
             'notes' => 'nullable|string|max:500',
+            'is_home_service' => 'boolean',
+            'home_address' => 'required_if:is_home_service,true|nullable|string|max:500',
         ]);
 
-        $appointment->update([
-            'status' => $request->status,
-            'notes' => $request->notes,
-        ]);
+        if ($request->is_home_service && $request->home_address) {
+            $validator = new \App\Services\HomeServiceValidator();
+            $result = $validator->validateAndCalculateFee($request->home_address);
+            
+            if (!$result['valid']) {
+                return back()->withErrors(['home_address' => $result['message']]);
+            }
+            
+            $appointment->update([
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'home_address' => $request->home_address,
+                'city' => $result['city'],
+                'distance_km' => $result['distance_km'],
+                'distance_fee' => $result['fee'],
+                'latitude' => $result['coordinates']['latitude'] ?? null,
+                'longitude' => $result['coordinates']['longitude'] ?? null,
+                'grand_total' => $appointment->total_price + $result['fee'] + ($appointment->tip_amount ?? 0),
+            ]);
+        } else {
+            $appointment->update([
+                'status' => $request->status,
+                'notes' => $request->notes,
+            ]);
+        }
 
         return back()->with('success', 'Appointment updated successfully.');
     }
@@ -114,7 +158,7 @@ class AppointmentController extends Controller
 
                 $appointment->delete();
 
-                return redirect('/manager/appointments')
+                return redirect()->route('manager.appointments.index')
                     ->with('success', 'Appointment deleted successfully and email notification sent.');
             }
 
@@ -128,14 +172,31 @@ class AppointmentController extends Controller
             $appointment->load(['user', 'service', 'specialist']);
             $customerEmail = $appointment->user->email;
 
-            if ($customerEmail) {
+            // Check notification settings
+            $settingsService = new \App\Services\SettingsService();
+            $notificationSettings = $settingsService->get('notification_settings', []);
+
+            $notifications = [];
+
+            // Send email if enabled
+            if ($customerEmail && ($notificationSettings['email_notifications'] ?? false) && ($notificationSettings['sms_confirmations'] ?? false)) {
                 Mail::to($customerEmail)->send(new AppointmentApprovedMail($appointment));
+                $notifications[] = 'email';
             }
 
-            $smsService = new SmsService();
-            $smsService->sendAppointmentConfirmation($appointment);
+            // Send SMS if enabled
+            if (($notificationSettings['sms_notifications'] ?? false) && ($notificationSettings['sms_confirmations'] ?? false)) {
+                $smsService = new SmsService();
+                $smsService->sendAppointmentConfirmation($appointment);
+                $notifications[] = 'SMS';
+            }
 
-            return back()->with('success', 'Appointment approved successfully. Email and SMS notification sent.');
+            $message = 'Appointment approved successfully.';
+            if (!empty($notifications)) {
+                $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
+            }
+
+            return back()->with('success', $message);
         }
 
     public function cancel(Request $request, Appointment $appointment)
@@ -151,16 +212,31 @@ class AppointmentController extends Controller
         // Update status
         $appointment->update(['status' => 'cancelled']);
 
-        // Send email notification
-        if ($customerEmail) {
+        // Check notification settings
+        $settingsService = new \App\Services\SettingsService();
+        $notificationSettings = $settingsService->get('notification_settings', []);
+
+        $notifications = [];
+
+        // Send email if enabled
+        if ($customerEmail && ($notificationSettings['email_notifications'] ?? false)) {
             Mail::to($customerEmail)->send(new AppointmentDeletedMail($appointment, $reason));
+            $notifications[] = 'email';
         }
 
-        // Optionally send SMS
-        $smsService = new \App\Services\SmsService();
-        $smsService->sendAppointmentCancellation($appointment);
+        // Send SMS if enabled
+        if ($notificationSettings['sms_notifications'] ?? false) {
+            $smsService = new \App\Services\SmsService();
+            $smsService->sendAppointmentCancellation($appointment);
+            $notifications[] = 'SMS';
+        }
 
-        return back()->with('success', 'Appointment cancelled successfully and email notification sent.');
+        $message = 'Appointment cancelled successfully.';
+        if (!empty($notifications)) {
+            $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
+        }
+
+        return back()->with('success', $message);
     }
 
     public function complete(Appointment $appointment)

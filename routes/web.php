@@ -8,8 +8,17 @@ use App\Http\Controllers\Customer\AppointmentController as CustomerAppointmentCo
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
+
+// Terms and Privacy Policy routes
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
 
 // Redirect authenticated users to their appropriate dashboard
 Route::get('/dashboard', function () {
@@ -31,12 +40,18 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::get('/services/{service}', [CustomerServiceController::class, 'show'])->name('services.show');
     Route::get('/specialists', [CustomerSpecialistController::class, 'index'])->name('specialists.index');
     Route::get('/specialists/{specialist}', [CustomerSpecialistController::class, 'show'])->name('specialists.show');
+    
+    Route::get('/appointments', [CustomerAppointmentController::class, 'index'])->name('appointments.index');
+
     Route::get('/appointments/create', [CustomerAppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [CustomerAppointmentController::class, 'store'])->name('appointments.store');
     Route::post('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::get('/appointments/specialists', [CustomerAppointmentController::class, 'getSpecialists'])->name('appointments.specialists');
 
     Route::get('/appointments/booked-slots', [CustomerAppointmentController::class, 'getBookedTimeSlots'])->name('appointments.booked-slots');
+    Route::get('/appointments/{appointment}', [CustomerAppointmentController::class, 'show'])
+    ->name('appointments.show');
+
 
     // Feedback
     Route::get('/feedback', [App\Http\Controllers\Customer\FeedbackController::class, 'index'])->name('feedback.index');
@@ -46,9 +61,15 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::put('/feedback/{feedback}', [App\Http\Controllers\Customer\FeedbackController::class, 'update'])->name('feedback.update');
     Route::delete('/feedback/{feedback}', [App\Http\Controllers\Customer\FeedbackController::class, 'destroy'])->name('feedback.destroy');
 
-    Route::get('/contact', function () {
-        return view('customer.contact');
-    })->name('contact');
+    Route::get('/contact', [App\Http\Controllers\Customer\ContactController::class, 'index'])->name('contact');
+
+    Route::post('/contact', [App\Http\Controllers\Customer\ContactController::class, 'store'])
+        ->name('contact.store');
+
+    // Payments
+    Route::get('/appointments/{appointment}/payment', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('payments.show');
+    Route::post('/appointments/{appointment}/payment/create', [App\Http\Controllers\Customer\PaymentController::class, 'create'])->name('payments.create');
+    Route::get('/payments/{transaction}/callback', [App\Http\Controllers\Customer\PaymentController::class, 'callback'])->name('payments.callback');
 });
 
 // Manager Routes
@@ -77,49 +98,62 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')
 
     // Specialists
     Route::resource('specialists', App\Http\Controllers\Manager\SpecialistController::class);
+
     
     // Inventory
     Route::resource('inventory', App\Http\Controllers\Manager\InventoryController::class);
+    Route::post('/inventory/{inventory}/adjust-quantity', [App\Http\Controllers\Manager\InventoryController::class, 'adjustQuantity'])
+        ->name('inventory.adjust-quantity');
 
     // Users
     Route::get('/users', [App\Http\Controllers\Manager\UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}', [App\Http\Controllers\Manager\UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [App\Http\Controllers\Manager\UserController::class, 'update'])->name('users.update');
+    Route::post('/users/{user}/ban', [App\Http\Controllers\Manager\UserController::class, 'ban'])->name('users.ban');
+    Route::post('/users/{user}/unban', [App\Http\Controllers\Manager\UserController::class, 'unban'])->name('users.unban');
 
     // Feedback
     Route::get('/feedback', [App\Http\Controllers\Manager\FeedbackController::class, 'index'])->name('feedback.index');
     Route::get('/feedback/{feedback}', [App\Http\Controllers\Manager\FeedbackController::class, 'show'])->name('feedback.show');
     Route::delete('/feedback/{feedback}', [App\Http\Controllers\Manager\FeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::patch('/feedback/{feedback}/toggle-visibility', [App\Http\Controllers\Manager\FeedbackController::class, 'toggleVisibility'])->name('feedback.toggle-visibility');
 
     // Settings
     Route::get('/settings', [App\Http\Controllers\Manager\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [App\Http\Controllers\Manager\SettingsController::class, 'update'])->name('settings.update');
 
-    // SMS Notifications
-    Route::get('/sms', [App\Http\Controllers\Manager\SmsController::class, 'index'])->name('sms.index');
-    Route::post('/sms/send', [App\Http\Controllers\Manager\SmsController::class, 'send'])->name('sms.send');
-    Route::post('/sms/send-reminders', [App\Http\Controllers\Manager\SmsController::class, 'sendReminders'])->name('sms.send-reminders');
-    Route::post('/email/send', [App\Http\Controllers\Manager\ManagerEmailController::class, 'send'])->name('email.send');
+
+
 
 });
+
+
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
+
     Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
-    Route::put('/settings/notifications', [App\Http\Controllers\Admin\SettingsController::class, 'updateNotifications'])->name('settings.notifications');
+
+    Route::post('/settings/clear-cache', [App\Http\Controllers\Admin\SettingsController::class, 'clearCache'])->name('settings.clearCache');
+    Route::post('/settings/backup', [App\Http\Controllers\Admin\SettingsController::class, 'backupNow'])->name('settings.backupNow');
+    Route::get('/settings/activity-log', [App\Http\Controllers\Admin\SettingsController::class, 'activityLog'])->name('settings.activityLog');
 
     // Staff Management - Specialist routes first to avoid conflicts
     Route::get('/staff/create-specialist', [App\Http\Controllers\Admin\StaffController::class, 'createSpecialist'])->name('staff.create-specialist');
     Route::post('/staff/specialist', [App\Http\Controllers\Admin\StaffController::class, 'storeSpecialist'])->name('staff.store-specialist');
+    Route::get('/staff/{specialist}/show-specialist', [App\Http\Controllers\Admin\StaffController::class, 'showSpecialist'])->name('staff.show-specialist');
     Route::get('/staff/{specialist}/edit-specialist', [App\Http\Controllers\Admin\StaffController::class, 'editSpecialist'])->name('staff.edit-specialist');
     Route::put('/staff/{specialist}/specialist', [App\Http\Controllers\Admin\StaffController::class, 'updateSpecialist'])->name('staff.update-specialist');
     Route::delete('/staff/{specialist}/specialist', [App\Http\Controllers\Admin\StaffController::class, 'destroySpecialist'])->name('staff.destroy-specialist');
 
     // Staff Management - Resource routes
     Route::resource('staff', App\Http\Controllers\Admin\StaffController::class);
+    
+    // User Management (Managers and Admins)
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 });
 
 Route::middleware('auth')->group(function () {
@@ -134,6 +168,8 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::patch('/profile', [App\Http\Controllers\Customer\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\Customer\ProfileController::class, 'password'])->name('profile.password');
     Route::delete('/profile', [App\Http\Controllers\Customer\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/send-2fa-code', [App\Http\Controllers\Customer\ProfileController::class, 'send2FACode'])->name('profile.send-2fa-code');
+    Route::post('/profile/toggle-2fa', [App\Http\Controllers\Customer\ProfileController::class, 'toggle2FA'])->name('profile.toggle-2fa');
 });
 
 Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')->group(function () {
@@ -141,13 +177,32 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')
     Route::patch('/profile', [App\Http\Controllers\Manager\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\Manager\ProfileController::class, 'password'])->name('profile.password');
     Route::delete('/profile', [App\Http\Controllers\Manager\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/send-2fa-code', [App\Http\Controllers\Manager\ProfileController::class, 'send2FACode'])->name('profile.send-2fa-code');
+    Route::get('/specialists/{id}/fetch', [App\Http\Controllers\Manager\SpecialistController::class, 'fetch'])
+    ->name('specialists.fetch');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [App\Http\Controllers\Admin\ProfileController::class, 'password'])->name('profile.password');
+    Route::put('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'password'])->name('profile.password');
     Route::delete('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/send-2fa-code', [App\Http\Controllers\Admin\ProfileController::class, 'send2FACode'])->name('profile.send-2fa-code');
+});
+
+// Temporary route to check ZIP extension
+Route::get('/check-zip', function () {
+    if (extension_loaded('zip')) {
+        return 'ZIP extension is enabled! ✅';
+    }
+    return 'ZIP extension is NOT enabled! ⚠️';
+});
+
+// Two-Factor Authentication Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/two-factor-challenge', [App\Http\Controllers\Auth\TwoFactorController::class, 'show'])->name('two-factor.show');
+    Route::post('/two-factor-challenge', [App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])->name('two-factor.verify');
+    Route::post('/two-factor-resend', [App\Http\Controllers\Auth\TwoFactorController::class, 'resend'])->name('two-factor.resend');
 });
 
 require __DIR__.'/auth.php';

@@ -25,12 +25,12 @@ class FeedbackController extends Controller
         }
 
         // Filter by rating
-        if ($request->has('rating') && $request->rating !== '') {
+        if ($request->filled('rating') && $request->rating !== '') {
             $query->where('rating', $request->rating);
         }
 
         // Filter by type
-        if ($request->has('type') && $request->type !== '') {
+        if ($request->filled('type') && $request->type !== '') {
             $query->where('type', $request->type);
         }
 
@@ -51,5 +51,13 @@ class FeedbackController extends Controller
     {
         $feedback->delete();
         return back()->with('success', 'Feedback deleted successfully.');
+    }
+
+    public function toggleVisibility(Feedback $feedback)
+    {
+        $feedback->is_public = !$feedback->is_public;
+        $feedback->save();
+        
+        return back()->with('success', 'Feedback visibility updated successfully.');
     }
 }

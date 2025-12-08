@@ -8,7 +8,7 @@
     <!-- Stats Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Today's Appointments -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -27,7 +27,7 @@
         </div>
 
         <!-- Pending Appointments -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Total Revenue -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Total Customers -->
-        <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-hidden shadow rounded-lg">
             <div class="p-5">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -86,7 +86,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Recent Appointments -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Appointments</h3>
                 <div class="flow-root">
@@ -95,13 +95,19 @@
                             <li class="py-4">
                                 <div class="flex items-center space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                                            <span class="text-sm font-medium text-green-600">{{ substr($appointment->user->name, 0, 1) }}</span>
-                                        </div>
+                                        @if($appointment->user->profile_photo_path)
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ Storage::url($appointment->user->profile_photo_path) }}" alt="{{ $appointment->user->name }}">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                                <span class="text-sm font-medium text-green-600">{{ substr($appointment->user->name, 0, 1) }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">{{ $appointment->user->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $appointment->service->name }} with {{ $appointment->specialist->name }}</p>
+                                        <a href="{{ route('manager.users.show', $appointment->user) }}" class="hover:text-green-600">
+                                            <p class="text-sm font-medium text-gray-900 truncate">{{ $appointment->user->name }}</p>
+                                            <p class="text-sm text-gray-500">{{ $appointment->service->name }} with {{ $appointment->specialist->name }}</p>
+                                        </a>
                                     </div>
                                     <div class="flex-shrink-0 text-right">
                                         <p class="text-sm text-gray-900">{{ $appointment->appointment_date->format('M d, Y') }}</p>
@@ -125,7 +131,7 @@
                     </ul>
                 </div>
                 <div class="mt-6">
-                    <a href="{{ route('manager.appointments.index') }}" class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <a href="{{ route('manager.appointments.index') }}" class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-pink-100 hover:bg-gray-50">
                         View all appointments
                     </a>
                 </div>
@@ -133,10 +139,11 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white shadow rounded-lg">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-2 gap-4">
+
                     <!-- <a href="{{ route('manager.appointments.create') }}" class="relative group bg-green-50 p-6 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-green-500 text-white">
@@ -151,7 +158,7 @@
                         </div>
                     </a> -->
 
-                    <a href="{{ route('manager.services.create') }}" class="relative group bg-purple-50 p-6 rounded-lg hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    <a href="{{ route('manager.services.create') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-purple-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +172,8 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('manager.specialists.create') }}" class="relative group bg-blue-50 p-6 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('manager.specialists.create') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow">
+                    
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-blue-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +187,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('manager.inventory.index') }}" class="relative group bg-green-50 p-6 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <a href="{{ route('manager.inventory.index') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-green-500 text-white">
                                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

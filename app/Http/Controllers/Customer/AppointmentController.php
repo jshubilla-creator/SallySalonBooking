@@ -8,6 +8,7 @@ use App\Models\Service;
 use App\Models\Specialist;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class AppointmentController extends Controller
 {
@@ -86,6 +87,16 @@ class AppointmentController extends Controller
             return back()->withErrors(['start_time' => 'This time slot is already taken. Please select another.']);
         }
 
+        // Check daily booking limit
+        $dailyLimit = config('salon.daily_booking_limit', 10);
+        $dailyBookings = Appointment::whereDate('appointment_date', $startTime->format('Y-m-d'))
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->count();
+
+        if ($dailyBookings >= $dailyLimit) {
+            return back()->withErrors(['appointment_date' => 'Daily booking limit reached. Please select another date.']);
+        }
+
         // Calculate tip and totals
         $tip = $request->custom_tip && $request->custom_tip > 0
             ? $request->custom_tip
@@ -95,13 +106,13 @@ class AppointmentController extends Controller
         $grandTotal = $total + $tip;
 
         // ✅ Create new appointment
-        Appointment::create([
+        $appointment = Appointment::create([
             'user_id' => auth()->id(),
             'service_id' => $service->id,
             'specialist_id' => $specialist->id,
             'appointment_date' => $startTime->format('Y-m-d H:i:s'),
-            'start_time' => $startTime->format('H:i:s'),
-            'end_time' => $endTime->format('H:i:s'),
+            'start_time' => $startTime->format('Y-m-d H:i:s'),
+            'end_time' => $endTime->format('Y-m-d H:i:s'),
             'status' => 'pending',
             'notes' => $request->notes,
             'is_home_service' => $request->has('is_home_service'),
@@ -116,11 +127,25 @@ class AppointmentController extends Controller
             'contact_email' => auth()->user()->email,
         ]);
 
+        // Send booking confirmation email and SMS
+        $appointment->load(['user', 'service', 'specialist']);
+        
+        // Send email
+        \Mail::to($appointment->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
+        
+        // Send SMS if phone number exists
+        if ($appointment->user->phone) {
+            $smsService = new \App\Services\SmsService();
+            $message = "Hi {$appointment->user->name}! Your appointment for {$appointment->service->name} on {$appointment->appointment_date->format('M d, Y')} at {$appointment->start_time->format('g:i A')} has been booked and is pending confirmation.";
+            $smsService->sendSms($appointment->user->phone, $message);
+        }
+
         return redirect()->route('customer.dashboard')
             ->with('success', 'Appointment booked successfully!');
     } catch (\Exception $e) {
         \Log::error('Appointment creation failed: ' . $e->getMessage());
         return back()->withErrors(['appointment' => 'Failed to create appointment.']);
+
     }
 }
 
@@ -212,4 +237,26 @@ class AppointmentController extends Controller
             return response()->json(['error' => 'Failed to fetch booked time slots.'], 500);
         }
     }
+/**
+ * Display a list of all appointments for the logged-in customer.
+ */
+public function index()
+{
+    $appointments = Appointment::where('user_id', auth()->id())
+        ->with(['service', 'specialist'])
+        ->orderBy('appointment_date', 'desc')
+        ->paginate(10);
+
+    return view('customer.appointments.index', compact('appointments'));
+}
+public function show(Appointment $appointment)
+{
+    // Make sure the user owns this appointment
+    if ($appointment->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    return view('customer.appointments.show', compact('appointment'));
+}
+
 }

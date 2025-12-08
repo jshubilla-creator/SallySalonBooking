@@ -10,7 +10,7 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $payments = Appointment::with(['user', 'service'])
+        $payments = Appointment::with(['user', 'service', 'paymentTransactions'])
             ->orderBy('appointment_date', 'desc')
             ->get();
 

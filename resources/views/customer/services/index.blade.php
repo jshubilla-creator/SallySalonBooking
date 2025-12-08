@@ -35,7 +35,7 @@
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($services as $service)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden service-card" data-category="{{ $service->category }}" data-service-id="{{ $service->id }}">
+                <div class="bg-blue-100 rounded-lg shadow-md overflow-hidden service-card" data-category="{{ $service->category }}" data-service-id="{{ $service->id }}">
                     @if($service->image)
                         <img src="{{ $service->image }}" alt="{{ $service->name }}" class="w-full h-48 object-cover">
                     @else
@@ -57,7 +57,7 @@
                         <p class="text-gray-600 mb-4">{{ $service->description }}</p>
 
                         <div class="flex justify-between items-center mb-4">
-                            <div class="text-2xl font-bold text-green-600">${{ number_format($service->price, 2) }}</div>
+                            <div class="text-2xl font-bold text-green-600">₱{{ number_format($service->price, 2) }}</div>
                             <div class="text-sm text-gray-500">{{ $service->duration_minutes }} min</div>
                         </div>
 
@@ -90,7 +90,7 @@
     <!-- Service Details Modal -->
     <div id="serviceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50" onclick="closeServiceModal()">
         <div class="flex items-center justify-center min-h-screen p-4" onclick="event.stopPropagation()">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="bg-blue-50 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">Service Details</h3>
                 </div>
@@ -136,63 +136,83 @@
         }
 
         function viewServiceDetails(serviceId) {
-            // Find the service data from the current page
-            const serviceCard = document.querySelector(`[data-service-id="${serviceId}"]`);
-            if (!serviceCard) {
-                // If not found, try to find by the service card that contains the button
-                const button = document.querySelector(`button[onclick="viewServiceDetails(${serviceId})"]`);
-                serviceCard = button.closest('.service-card');
-            }
+            // Show loading state
+            document.getElementById('serviceDetails').innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                    <span class="ml-2 text-gray-600">Loading service details...</span>
+                </div>
+            `;
 
-            if (serviceCard) {
-                // Extract service data from the card
-                const serviceName = serviceCard.querySelector('h3').textContent;
-                const serviceCategory = serviceCard.querySelector('span').textContent;
-                const serviceDescription = serviceCard.querySelector('p').textContent;
-                const servicePrice = serviceCard.querySelector('.text-2xl').textContent;
-                const serviceDuration = serviceCard.querySelector('.text-sm').textContent;
+            // Show modal
+            document.getElementById('serviceModal').classList.remove('hidden');
 
-                document.getElementById('serviceDetails').innerHTML = `
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-start">
-                            <h4 class="text-xl font-semibold text-gray-900">${serviceName}</h4>
-                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">${serviceCategory}</span>
+            // Fetch service details via AJAX
+            fetch(`/customer/services/${serviceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('serviceDetails').innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-xl font-semibold text-gray-900">${data.name}</h4>
+                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">${data.category}</span>
+                            </div>
+                            <p class="text-gray-600">${data.description}</p>
+                            <div class="flex justify-between items-center">
+                                <div class="text-2xl font-bold text-green-600">₱${parseFloat(data.price).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                                <div class="text-sm text-gray-500">${data.duration_minutes} min</div>
+                            </div>
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <h5 class="font-medium text-gray-900 mb-2">What to Expect:</h5>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• Professional service by our certified specialists</li>
+                                    <li>• High-quality products and equipment</li>
+                                    <li>• Clean and sanitized environment</li>
+                                    <li>• Satisfaction guarantee</li>
+                                </ul>
+                            </div>
+                            ${data.feedback && data.feedback.length > 0 ? `
+                                <div class="mt-6">
+                                    <h5 class="font-medium text-gray-900 mb-3">Customer Reviews</h5>
+                                    <div class="space-y-3">
+                                        ${data.feedback.map(review => `
+                                            <div class="bg-white p-3 rounded-lg border">
+                                                <div class="flex items-center space-x-2 mb-2">
+                                                    <div class="flex text-yellow-400">
+                                                        ${Array.from({length: 5}, (_, i) => 
+                                                            i < review.rating 
+                                                                ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
+                                                                : '<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
+                                                        ).join('')}
+                                                    </div>
+                                                    <span class="text-sm font-medium">${review.user_name}</span>
+                                                    <span class="text-sm text-gray-500">${review.created_at}</span>
+                                                </div>
+                                                <p class="text-sm text-gray-700">${review.comment}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
                         </div>
-                        <p class="text-gray-600">${serviceDescription}</p>
-                        <div class="flex justify-between items-center">
-                            <div class="text-2xl font-bold text-green-600">${servicePrice}</div>
-                            <div class="text-sm text-gray-500">${serviceDuration}</div>
-                        </div>
-                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                            <h5 class="font-medium text-gray-900 mb-2">What to Expect:</h5>
-                            <ul class="text-sm text-gray-600 space-y-1">
-                                <li>• Professional service by our certified specialists</li>
-                                <li>• High-quality products and equipment</li>
-                                <li>• Clean and sanitized environment</li>
-                                <li>• Satisfaction guarantee</li>
-                            </ul>
-                        </div>
-                    </div>
-                `;
+                    `;
 
-                document.getElementById('bookServiceBtn').onclick = function() {
-                    window.location.href = `/customer/appointments/create?service=${serviceId}`;
-                };
-
-                document.getElementById('serviceModal').classList.remove('hidden');
-            } else {
-                // Fallback: show error message
-                document.getElementById('serviceDetails').innerHTML = `
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Service not found</h3>
-                        <p class="mt-1 text-sm text-gray-500">Unable to load service details.</p>
-                    </div>
-                `;
-                document.getElementById('serviceModal').classList.remove('hidden');
-            }
+                    document.getElementById('bookServiceBtn').onclick = function() {
+                        window.location.href = `/customer/appointments/create?service=${serviceId}`;
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching service details:', error);
+                    document.getElementById('serviceDetails').innerHTML = `
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Error loading service details</h3>
+                            <p class="mt-1 text-sm text-gray-500">Please try again later.</p>
+                        </div>
+                    `;
+                });
         }
 
         function closeServiceModal() {

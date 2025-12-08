@@ -7,7 +7,10 @@
                 <p class="mt-2 text-lg text-gray-600">View and manage appointment information</p>
             </div>
             <a href="{{ route('manager.appointments.index') }}"
-               class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 text-center">
+               class="flex items-center justify-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 text-center">
+               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
                 Back to Appointments
             </a>
         </div>
@@ -17,7 +20,7 @@
         <!-- MAIN CONTENT -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Appointment Information -->
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Appointment Information</h3>
 
@@ -63,7 +66,7 @@
 
                         <!-- Status -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-500">Status</label>
+                            <label class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 block text-sm font-medium text-gray-500">Status</label>
                             <div class="mt-1">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     @if($appointment->status === 'confirmed') bg-green-100 text-green-800
@@ -104,7 +107,7 @@
             </div>
 
             <!-- Customer Info -->
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Customer Information</h3>
 
@@ -140,7 +143,7 @@
         <!-- SIDEBAR -->
         <div class="space-y-6">
             <!-- Quick Actions -->
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
 
@@ -149,7 +152,10 @@
                             <form method="POST" action="{{ route('manager.appointments.approve', $appointment) }}">
                                 @csrf
                                 <button type="submit"
-                                    class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                                    class="flex items-center justify-center w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
                                     Approve Appointment
                                 </button>
                             </form>
@@ -158,7 +164,10 @@
                             @if(in_array($appointment->status, ['pending', 'confirmed']))
                                 <button type="button"
                                     onclick="openCancelModal()"
-                                    class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition">
+                                    class="flex items-center justify-center w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
                                     Cancel Appointment
                                 </button>
                             @endif
@@ -168,29 +177,32 @@
                             <form method="POST" action="{{ route('manager.appointments.complete', $appointment) }}">
                                 @csrf
                                 <button type="submit"
-                                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                                        class="flex items-center justify-center w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
                                     Mark as Complete
                                 </button>
                             </form>
                         @endif
 
-                        <a href="{{ route('manager.appointments.edit', $appointment) }}"
-                           class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition block text-center">
-                            Edit Appointment
-                        </a>
-
                         <!-- Delete with Modal -->
-                        <button type="button"
-                                onclick="openDeleteModal()"
-                                class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition">
-                            Delete Appointment
-                        </button>
+                        @if(in_array($appointment->status, ['completed', 'cancelled']))
+                            <button type="button"
+                                    onclick="openDeleteModal()"
+                                    class="flex items-center justify-center w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7-4h8a1 1 0 011 1v1H7V4a1 1 0 011-1z"></path>
+                                </svg>
+                                Delete Appointment
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>
 
             <!-- Service Details -->
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Service Details</h3>
 
@@ -229,7 +241,7 @@
 
     <!-- Delete Modal -->
     <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Appointment</h3>
             <p class="text-sm text-gray-600 mb-4">
                 Please provide a reason for deleting this appointment. The customer will be notified via email.
@@ -260,7 +272,7 @@
 
     <!-- Cancel Modal -->
     <div id="cancelModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-bold text-gray-900 mb-2">Cancel Appointment</h3>
             <p class="text-sm text-gray-600 mb-4">
                 Please provide a reason for cancelling this appointment. The customer will receive an email notification.

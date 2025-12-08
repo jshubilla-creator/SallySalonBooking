@@ -8,7 +8,10 @@
             </div>
             <div class="flex space-x-3">
                 <a href="{{ route('manager.specialists.create') }}"
-                   class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
+                   class="flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4a4 4 0 110 8 4 4 0 010-8zm6 8v6m3-3h-6M3 20a7 7 0 0114 0H3z" />
+                    </svg>
                     Add New Specialist
                 </a>
             </div>
@@ -16,7 +19,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg p-6 mb-6">
         <form method="GET" action="{{ route('manager.specialists.index') }}" class="space-y-4">
             <!-- Search Bar -->
             <div>
@@ -69,8 +72,8 @@
     <!-- Specialists Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($specialists as $specialist)
-            <div class="bg-white shadow rounded-lg overflow-hidden">
-                <div class="px-6 py-4">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg overflow-hidden flex flex-col">
+                <div class="px-6 py-4 flex-1">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 h-12 w-12">
                             @if($specialist->profile_image)

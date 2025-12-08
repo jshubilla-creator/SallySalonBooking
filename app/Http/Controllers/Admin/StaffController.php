@@ -10,6 +10,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Notifications\SpecialistHoursUpdatedNotification;
+use Illuminate\Support\Facades\Notification;
 
 class StaffController extends Controller
 {
@@ -24,7 +26,7 @@ class StaffController extends Controller
         })->with('roles');
 
         // Staff search
-        if ($request->has('staff_search') && $request->staff_search !== '') {
+        if ($request->filled('staff_search')) {
             $search = $request->staff_search;
             $staffQuery->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -34,7 +36,7 @@ class StaffController extends Controller
         }
 
         // Staff role filter
-        if ($request->has('staff_role') && $request->staff_role !== '') {
+        if ($request->filled('staff_role')) {
             $staffQuery->whereHas('roles', function($query) use ($request) {
                 $query->where('name', $request->staff_role);
             });
@@ -49,7 +51,7 @@ class StaffController extends Controller
         $specialistsQuery = Specialist::with('services');
 
         // Specialists search
-        if ($request->has('specialist_search') && $request->specialist_search !== '') {
+        if ($request->filled('specialist_search')) {
             $search = $request->specialist_search;
             $specialistsQuery->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -59,7 +61,7 @@ class StaffController extends Controller
         }
 
         // Specialists specialization filter
-        if ($request->has('specialist_specialization') && $request->specialist_specialization !== '') {
+        if ($request->filled('specialist_specialization')) {
             $specialistsQuery->where('specialization', $request->specialist_specialization);
         }
 
@@ -68,7 +70,13 @@ class StaffController extends Controller
         $staffRoles = ['manager', 'admin'];
         $specializations = Specialist::distinct()->pluck('specialization')->filter();
 
-        return view('admin.staff.index', compact('staff', 'specialists', 'staffRoles', 'specializations'));
+        // Determine active tab
+        $activeTab = 'staff';
+        if ($request->filled('specialist_search') || $request->filled('specialist_specialization') || $request->get('tab') === 'specialists') {
+            $activeTab = 'specialists';
+        }
+
+        return view('admin.staff.index', compact('staff', 'specialists', 'staffRoles', 'specializations', 'activeTab'));
     }
 
     /**
@@ -108,7 +116,7 @@ class StaffController extends Controller
 
         $user->assignRole($request->role);
 
-        return redirect()->route('admin.staff.index')
+        return redirect()->route('admin.staff.index', ['tab' => 'staff'])
             ->with('success', 'Staff member created successfully.');
     }
 
@@ -159,7 +167,7 @@ class StaffController extends Controller
             $staff->syncRoles([$request->role]);
         }
 
-        return redirect()->route('admin.staff.index')
+        return redirect()->route('admin.staff.index', ['tab' => 'staff'])
             ->with('success', 'Staff member updated successfully.');
     }
 
@@ -170,13 +178,13 @@ class StaffController extends Controller
     {
         // Prevent deleting the last admin
         if ($staff->hasRole('admin') && User::role('admin')->count() <= 1) {
-            return redirect()->route('admin.staff.index')
+            return redirect()->route('admin.staff.index', ['tab' => 'staff'])
                 ->with('error', 'Cannot delete the last admin user.');
         }
 
         $staff->delete();
 
-        return redirect()->route('admin.staff.index')
+        return redirect()->route('admin.staff.index', ['tab' => 'staff'])
             ->with('success', 'Staff member deleted successfully.');
     }
 
@@ -210,10 +218,16 @@ class StaffController extends Controller
             'services.*' => ['exists:services,id'],
         ]);
 
+        // Normalize phone number
+        $phone = preg_replace('/[^0-9+]/', '', $request->phone);
+        if (preg_match('/^0[0-9]{9}$/', $phone)) {
+            $phone = '+63' . substr($phone, 1);
+        }
+
         $specialist = Specialist::create([
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone' => $phone,
             'bio' => $request->bio,
             'specialization' => $request->specialization,
             'experience_years' => $request->experience_years,
@@ -223,8 +237,17 @@ class StaffController extends Controller
 
         $specialist->services()->sync($request->services);
 
-        return redirect()->route('admin.staff.index')
+        return redirect()->route('admin.staff.index', ['tab' => 'specialists'])
             ->with('success', 'Specialist created successfully.');
+    }
+
+    /**
+     * Display the specified specialist.
+     */
+    public function showSpecialist(Specialist $specialist): View
+    {
+        $specialist->load('services');
+        return view('admin.staff.show-specialist', compact('specialist'));
     }
 
     /**
@@ -250,19 +273,21 @@ class StaffController extends Controller
             'specialization' => ['required', 'string', 'max:255'],
             'experience_years' => ['required', 'integer', 'min:0', 'max:50'],
             'working_hours' => ['required', 'array'],
-            'working_hours.*.day' => ['required', 'string', 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday'],
-            'working_hours.*.start_time' => ['required', 'string'],
-            'working_hours.*.end_time' => ['required', 'string'],
-            'working_hours.*.is_available' => ['boolean'],
             'services' => ['required', 'array'],
             'services.*' => ['exists:services,id'],
             'is_available' => ['boolean'],
         ]);
 
+        // Normalize phone number for update
+        $phone = preg_replace('/[^0-9+]/', '', $request->phone);
+        if (preg_match('/^0[0-9]{9}$/', $phone)) {
+            $phone = '+63' . substr($phone, 1);
+        }
+
         $specialist->update([
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone' => $phone,
             'bio' => $request->bio,
             'specialization' => $request->specialization,
             'experience_years' => $request->experience_years,
@@ -272,8 +297,12 @@ class StaffController extends Controller
 
         $specialist->services()->sync($request->services);
 
-        return redirect()->route('admin.staff.index')
-            ->with('success', 'Specialist updated successfully.');
+        // Notify admin about hours update
+        $admins = User::role('admin')->get();
+        Notification::send($admins, new SpecialistHoursUpdatedNotification($specialist, 'Admin'));
+
+        return redirect()->route('admin.staff.index', ['tab' => 'specialists'])
+            ->with('success', 'Specialist updated successfully. Admin notified.');
     }
 
     /**
@@ -283,7 +312,7 @@ class StaffController extends Controller
     {
         $specialist->delete();
 
-        return redirect()->route('admin.staff.index')
+        return redirect()->route('admin.staff.index', ['tab' => 'specialists'])
             ->with('success', 'Specialist deleted successfully.');
     }
 }

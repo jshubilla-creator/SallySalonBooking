@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Welcome Section -->
-        <div class="bg-white rounded-lg shadow-md p-8 mb-8 border border-gray-200">
+        <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md p-8 mb-8 border border-gray-200">
             <div class="text-gray-900">
                 <h1 class="text-3xl font-bold mb-2">Welcome back, {{ auth()->user()->name }}!</h1>
                 <p class="text-lg text-gray-600">Book your next beauty appointment with our expert specialists</p>
@@ -12,7 +12,7 @@
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <a href="{{ route('customer.appointments.create') }}"
-               class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+               class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
                 <div class="flex items-center">
                     <div class="bg-gray-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,7 +27,7 @@
             </a>
 
             <a href="{{ route('customer.services.index') }}"
-               class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+               class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
                 <div class="flex items-center">
                     <div class="bg-gray-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@
             </a>
 
             <a href="{{ route('customer.specialists.index') }}"
-               class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+               class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200 border border-gray-200">
                 <div class="flex items-center">
                     <div class="bg-gray-100 p-3 rounded-full">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,13 +58,14 @@
         </div>
 
         <!-- Recent Appointments -->
-        <div class="bg-white rounded-lg shadow-md border border-gray-200">
+        <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-900">Your Recent Appointments</h2>
             </div>
             <div class="p-6">
-                @if($appointments->count() > 0)
-                    <div class="space-y-4">
+    @if($appointments->count() > 0)
+        <div id="appointments-list" class="space-y-4 max-h-96 overflow-y-auto">
+
                         @foreach($appointments as $appointment)
                     <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
                         data-appointment-id="{{ $appointment->id }}"
@@ -74,9 +75,6 @@
                         data-appointment-payment-method="{{ $appointment->payment_method ?? 'N/A' }}"
                         data-appointment-reason="{{ $appointment->cancellation_reason ?? 'No reason provided' }}">
                         
-
-
-
                                 <div class="flex justify-between items-start">
                                     <div class="flex-1">
                                         <h3 class="text-lg font-medium text-gray-900"
@@ -177,10 +175,12 @@
         </div>
     </div>
 
+    
+
     <!-- Appointment Details Modal -->
     <div id="appointmentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="bg-blue-50 border-2 border-gray-50 rounded-lg shadow-xl max-w-md w-full">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">Appointment Details</h3>
                 </div>
@@ -189,7 +189,7 @@
                 </div>
                 <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
                     <button onclick="closeAppointmentModal()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg">
                         Close
                     </button>
                 </div>
@@ -293,7 +293,7 @@
             modal.id = 'cancelConfirmationModal';
             modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center p-4';
             modal.innerHTML = `
-                <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="bg-blue-50 rounded-lg shadow-xl max-w-md w-full">
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900">Cancel Appointment</h3>
                     </div>
@@ -393,7 +393,7 @@
 
             // Create notification element
             const notification = document.createElement('div');
-            notification.className = `notification fixed top-4 right-4 z-50 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden transform transition-all duration-300 ease-in-out translate-x-full`;
+            notification.className = `notification fixed top-4 right-4 z-50 max-w-sm w-full bg-blue-50 shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden transform transition-all duration-300 ease-in-out translate-x-full`;
 
             let iconColor = 'text-blue-400';
             let bgColor = 'bg-blue-50';
@@ -401,15 +401,15 @@
 
             if (type === 'success') {
                 iconColor = 'text-green-400';
-                bgColor = 'bg-green-50';
+                bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                 borderColor = 'border-green-200';
             } else if (type === 'error') {
                 iconColor = 'text-red-400';
-                bgColor = 'bg-red-50';
+                bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                 borderColor = 'border-red-200';
             } else if (type === 'warning') {
                 iconColor = 'text-yellow-400';
-                bgColor = 'bg-yellow-50';
+                bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                 borderColor = 'border-yellow-200';
             }
 
@@ -449,7 +449,7 @@
                 notification.classList.remove('translate-x-full');
             }, 100);
 
-            // Auto remove after 5 seconds
+            // Auto remove after 3 seconds
             setTimeout(() => {
                 if (notification.parentElement) {
                     notification.classList.add('translate-x-full');
@@ -459,7 +459,7 @@
                         }
                     }, 300);
                 }
-            }, 5000);
+            }, 3000);
         }
 
         // Show session messages as notifications on page load

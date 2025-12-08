@@ -23,12 +23,16 @@ class Appointment extends Model
         'payment_method', 
         'is_home_service',
         'home_address',
+        'city',
+        'distance_km',
+        'distance_fee',
         'latitude',
         'longitude',
         'tip_amount',
         'contact_phone',
         'contact_email',
-        'cancellation_reason', 
+        'cancellation_reason',
+        'grand_total'
     ];
 
     protected $casts = [
@@ -59,6 +63,11 @@ class Appointment extends Model
     public function feedback()
     {
         return $this->hasOne(Feedback::class);
+    }
+
+    public function paymentTransactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
     }
 
     // 🔍 Scopes

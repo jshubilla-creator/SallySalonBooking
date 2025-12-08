@@ -19,11 +19,17 @@ class Specialist extends Model
         'profile_image',
         'working_hours',
         'is_available',
+        'current_lat',
+        'current_lng',
+        'location_updated_at',
     ];
 
     protected $casts = [
         'working_hours' => 'array',
         'is_available' => 'boolean',
+        'current_lat' => 'float',
+        'current_lng' => 'float',
+        'location_updated_at' => 'datetime',
     ];
 
     // Relationships
@@ -31,10 +37,7 @@ class Specialist extends Model
     {
         return $this->belongsToMany(Service::class, 'specialist_services');
     }
-    public function specialists()
-    {
-        return $this->belongsToMany(Specialist::class, 'service_specialist');
-    }
+    
 
     public function appointments()
     {

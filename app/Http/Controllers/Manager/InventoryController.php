@@ -24,9 +24,11 @@ class InventoryController extends Controller
         }
 
         // Filter by category
-        if ($request->has('category') && $request->category !== '') {
-            $query->where('category', $request->category);
+        if ($request->has('low_stock') && $request->low_stock) {
+    $query->whereRaw('quantity <= min_quantity');
+        
         }
+ 
 
         // Filter by low stock
         if ($request->has('low_stock') && $request->low_stock) {
@@ -34,14 +36,19 @@ class InventoryController extends Controller
         }
 
         // Filter by status
-        if ($request->has('status') && $request->status !== '') {
+        if ($request->has('status') && $request->status !== 'all') {
             $query->where('is_active', $request->status === 'active');
+            
         }
 
         $inventory = $query->orderBy('name')->paginate(10);
         $categories = Inventory::distinct()->pluck('category')->filter();
 
-        return view('manager.inventory.index', compact('inventory', 'categories'));
+        // Check if there are any low stock items
+        $lowStockItems = Inventory::whereColumn('quantity', '<=', 'min_quantity')->get();
+        $lowStockCount = $lowStockItems->count();
+
+        return view('manager.inventory.index', compact('inventory', 'categories', 'lowStockCount'));
     }
 
     public function create()
@@ -63,7 +70,11 @@ class InventoryController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Inventory::create($request->all());
+        // Default to false if not provided
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+
+        Inventory::create($data);
 
         return redirect()->route('manager.inventory.index')
             ->with('success', 'Inventory item created successfully.');
@@ -93,7 +104,10 @@ class InventoryController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $inventory->update($request->all());
+        $data = $request->all();
+    $data['is_active'] = $request->has('is_active');
+
+        $inventory->update($data);
 
         return redirect()->route('manager.inventory.index')
             ->with('success', 'Inventory item updated successfully.');
@@ -104,5 +118,26 @@ class InventoryController extends Controller
         $inventory->delete();
         return redirect()->route('manager.inventory.index')
             ->with('success', 'Inventory item deleted successfully.');
+    }
+
+    public function adjustQuantity(Request $request, Inventory $inventory)
+    {
+        $request->validate([
+            'adjustment' => 'required|integer',
+        ]);
+
+        $newQuantity = $inventory->quantity + $request->adjustment;
+
+        // Prevent negative quantity
+        if ($newQuantity < 0) {
+            return back()->with('error', 'Cannot adjust quantity below zero.');
+        }
+
+        $inventory->update(['quantity' => $newQuantity]);
+
+        $actionWord = $request->adjustment > 0 ? 'increased' : 'decreased';
+        $amount = abs($request->adjustment);
+
+        return back()->with('success', "Inventory quantity {$actionWord} by {$amount}.");
     }
 }

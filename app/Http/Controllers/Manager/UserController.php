@@ -23,11 +23,12 @@ class UserController extends Controller
         }
 
         // Filter by gender
-        if ($request->has('gender') && $request->gender !== '') {
+        if ($request->filled('gender') && $request->gender !== '') {
             $query->where('gender', $request->gender);
         }
 
-        $users = $query->orderBy('name')->paginate(10);
+    // Include appointments count for the users index so the UI shows accurate counts
+    $users = $query->withCount('appointments')->orderBy('name')->paginate(10);
         $genders = ['male', 'female', 'other'];
 
         return view('manager.users.index', compact('users', 'genders'));
@@ -36,6 +37,8 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load(['appointments.service', 'appointments.specialist']);
+        // Load appointments count for reliable stats in the view
+        $user->loadCount('appointments');
         return view('manager.users.show', compact('user'));
     }
 
@@ -51,5 +54,23 @@ class UserController extends Controller
         $user->update($request->all());
 
         return back()->with('success', 'User updated successfully.');
+    }
+
+    public function ban(Request $request, User $user)
+    {
+        $request->validate([
+            'ban_reason' => 'required|string|max:500',
+        ]);
+
+        $user->ban($request->ban_reason);
+
+        return back()->with('success', 'User has been banned successfully.');
+    }
+
+    public function unban(User $user)
+    {
+        $user->unban();
+
+        return back()->with('success', 'User has been unbanned successfully.');
     }
 }

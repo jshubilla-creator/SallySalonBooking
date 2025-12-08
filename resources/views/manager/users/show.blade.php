@@ -7,7 +7,10 @@
                 <p class="mt-2 text-lg text-gray-600">Customer profile and information</p>
             </div>
             <a href="{{ route('manager.users.index') }}"
-               class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+               class="flex item-center justify-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
                 Back to Customers
             </a>
         </div>
@@ -16,7 +19,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Customer Details -->
         <div class="lg:col-span-2">
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Customer Information</h3>
 
@@ -77,7 +80,7 @@
             </div>
 
             <!-- Recent Appointments -->
-            <div class="mt-8 bg-white shadow rounded-lg">
+            <div class="mt-8 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Appointments</h3>
 
@@ -121,7 +124,7 @@
                         @if($user->appointments->count() > 5)
                             <div class="mt-6">
                                 <a href="{{ route('manager.appointments.index') }}?user={{ $user->id }}"
-                                   class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                   class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-blue-100 hover:bg-gray-50">
                                     View all appointments
                                 </a>
                             </div>
@@ -135,33 +138,37 @@
 
         <!-- Quick Actions -->
         <div class="space-y-6">
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
 
-                    <div class="space-y-3">
+                    <div class="flex flex-col space-y-4">
                         <a href="{{ route('manager.appointments.index') }}?user={{ $user->id }}"
-                           class="w-full bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200">
+                           class="flex items-center justify-center w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200">
+                           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
                             View Appointments
                         </a>
 
-                        <a href="mailto:{{ $user->email }}"
-                           class="w-full bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200">
-                            Send Email
+                        <a href="{{ route('manager.reminders.send-manual', $user) }}"
+                           class="block w-full bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                            <div class="flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Send Manual Email</span>
+                            </div>
                         </a>
 
-                        @if($user->phone)
-                            <a href="tel:{{ $user->phone }}"
-                               class="w-full bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200">
-                                Call Customer
-                            </a>
-                        @endif
+
                     </div>
                 </div>
             </div>
 
             <!-- Customer Statistics -->
-            <div class="bg-white shadow rounded-lg">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Statistics</h3>
 
@@ -180,7 +187,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-sm text-gray-500">Total Spent</span>
-                            <span class="text-sm font-medium text-gray-900">${{ number_format($user->appointments->where('status', 'completed')->sum('total_price'), 2) }}</span>
+                            <span class="text-sm font-medium text-gray-900">₱{{ number_format($user->appointments->where('status', 'completed')->sum('total_price'), 2) }}</span>
                         </div>
                     </div>
                 </div>

@@ -9,14 +9,17 @@
                         <p class="mt-2 text-lg text-gray-600">Create a new specialist profile</p>
                     </div>
                     <a href="{{ route('admin.staff.index') }}"
-                       class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                       class="flex items-center justify-center px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
                         Back to Staff
                     </a>
                 </div>
             </div>
 
             <!-- Form -->
-            <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Specialist Information</h2>
                 </div>
@@ -123,7 +126,7 @@
                                                {{ in_array($service->id, old('services', [])) ? 'checked' : '' }}
                                                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                                         <label for="service_{{ $service->id }}" class="ml-2 text-sm text-gray-700">
-                                            {{ $service->name }} - ${{ number_format($service->price, 2) }}
+                                            {{ $service->name }} - ₱{{ number_format($service->price, 2) }}
                                         </label>
                                     </div>
                                 @endforeach
@@ -148,25 +151,24 @@
                                         </div>
                                         <div class="flex items-center space-x-2">
                                             <input type="checkbox"
-                                                   name="working_hours[{{ $index }}][is_available]"
+                                                   name="working_hours[{{ $day }}][enabled]"
                                                    value="1"
                                                    id="available_{{ $day }}"
-                                                   {{ old("working_hours.{$index}.is_available") ? 'checked' : '' }}
+                                                   {{ old("working_hours.{$day}.enabled") ? 'checked' : '' }}
                                                    class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
                                             <label for="available_{{ $day }}" class="text-sm text-gray-700">Available</label>
                                         </div>
                                         <div class="flex items-center space-x-2">
                                             <input type="time"
-                                                   name="working_hours[{{ $index }}][start_time]"
-                                                   value="{{ old("working_hours.{$index}.start_time", '09:00') }}"
+                                                   name="working_hours[{{ $day }}][start]"
+                                                   value="{{ old("working_hours.{$day}.start", '09:00') }}"
                                                    class="px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
                                             <span class="text-sm text-gray-500">to</span>
                                             <input type="time"
-                                                   name="working_hours[{{ $index }}][end_time]"
-                                                   value="{{ old("working_hours.{$index}.end_time", '17:00') }}"
+                                                   name="working_hours[{{ $day }}][end]"
+                                                   value="{{ old("working_hours.{$day}.end", '17:00') }}"
                                                    class="px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
                                         </div>
-                                        <input type="hidden" name="working_hours[{{ $index }}][day]" value="{{ $day }}">
                                     </div>
                                 @endforeach
                             </div>

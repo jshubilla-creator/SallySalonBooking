@@ -41,7 +41,7 @@
 
                 <!-- Display validation errors -->
                 @if ($errors->any())
-                    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 border border-red-200 rounded-md p-4 mb-6 session-message" data-type="error">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -64,7 +64,7 @@
                     </div>
                 @endif
 
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-blue-100 rounded-lg shadow-md p-6">
                     <!-- Step 1: Service Selection -->
                     <div id="step1" class="step {{ $selectedService ? 'hidden' : '' }}">
                         <h2 class="text-xl font-semibold text-gray-900 mb-2">1. Choose a Service</h2>
@@ -892,6 +892,22 @@
                 // The form will be processed by the AppointmentController@store method
             });
 
+            // Auto-dismiss session messages after 3 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                const sessionMessages = document.querySelectorAll('.session-message');
+                sessionMessages.forEach(function(message) {
+                    setTimeout(function() {
+                        message.style.transition = 'opacity 0.5s ease-out';
+                        message.style.opacity = '0';
+                        setTimeout(function() {
+                            if (message.parentElement) {
+                                message.remove();
+                            }
+                        }, 500);
+                    }, 3000);
+                });
+            });
+
             // Notification system
             function showNotification(message, type = 'info') {
                 // Remove existing notifications
@@ -903,20 +919,20 @@
                 notification.className = `notification fixed top-4 right-4 z-50 max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden transform transition-all duration-300 ease-in-out translate-x-full`;
 
                 let iconColor = 'text-blue-400';
-                let bgColor = 'bg-blue-50';
+                let bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                 let borderColor = 'border-blue-200';
 
                 if (type === 'success') {
                     iconColor = 'text-green-400';
-                    bgColor = 'bg-green-50';
+                    bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                     borderColor = 'border-green-200';
                 } else if (type === 'error') {
                     iconColor = 'text-red-400';
-                    bgColor = 'bg-red-50';
+                    bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                     borderColor = 'border-red-200';
                 } else if (type === 'warning') {
                     iconColor = 'text-yellow-400';
-                    bgColor = 'bg-yellow-50';
+                    bgColor = 'bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100';
                     borderColor = 'border-yellow-200';
                 }
 
@@ -956,7 +972,7 @@
                     notification.classList.remove('translate-x-full');
                 }, 100);
 
-                // Auto remove after 5 seconds
+                // Auto remove after 3 seconds
                 setTimeout(() => {
                     if (notification.parentElement) {
                         notification.classList.add('translate-x-full');
@@ -966,7 +982,7 @@
                             }
                         }, 300);
                     }
-                }, 5000);
+                }, 3000);
             }
 
             // Function to change service

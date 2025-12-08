@@ -1,5 +1,5 @@
 <x-customer-layout>
-<div class="min-h-screen bg-gray-50 py-8">
+<div class="min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
@@ -9,13 +9,13 @@
 
         <!-- Success/Error Messages -->
         @if(session('success'))
-            <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <div class="mb-6 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 border border-green-200 text-green-700 px-4 py-3 rounded-lg session-message" data-type="success">
                 {{ session('success') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div class="mb-6 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg session-message" data-type="error">
                 {{ session('error') }}
             </div>
         @endif
@@ -27,7 +27,7 @@
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach($appointmentsWithoutFeedback as $appointment)
                         @if($appointment && $appointment->service && $appointment->specialist)
-                            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                            <div class="bg-blue-100 rounded-lg shadow-md p-6 border border-gray-200">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
                                         <h3 class="text-lg font-medium text-gray-900">{{ $appointment->service->name }}</h3>
@@ -71,7 +71,7 @@
                 <div class="space-y-6">
                     @foreach($existingFeedback as $feedback)
                         @if($feedback && $feedback->appointment && $feedback->appointment->service && $feedback->appointment->specialist)
-                            <div class="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                            <div class="bg-blue-100 rounded-lg shadow-md p-6 border border-gray-200">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="flex-1">
                                         <div class="flex items-center mb-2">
@@ -108,18 +108,17 @@
                                 <p class="text-xs text-gray-500">
                                     Submitted on {{ $feedback->created_at->format('M d, Y \a\t g:i A') }}
                                 </p>
-                                <div class="flex space-x-2">
+                                <div class="flex items-center space-x-2">
                                     <a href="{{ route('customer.feedback.edit', $feedback) }}"
                                        class="text-sm text-green-600 hover:text-green-800 font-medium">
                                         Edit
                                     </a>
-                                    <form method="POST" action="{{ route('customer.feedback.destroy', $feedback) }}" class="inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this feedback?')">
+                                    <button type="button" onclick="openDeleteModal({{ $feedback->id }})" class="text-sm text-red-600 hover:text-red-800 font-medium">
+                                        Delete
+                                    </button>
+                                    <form id="delete-form-{{ $feedback->id }}" method="POST" action="{{ route('customer.feedback.destroy', $feedback) }}" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-sm text-red-600 hover:text-red-800 font-medium">
-                                            Delete
-                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -139,4 +138,61 @@
         @endif
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-blue-100 rounded-lg shadow-xl max-w-md w-full">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Delete Feedback</h3>
+        </div>
+        <div class="px-6 py-4">
+            <p class="text-sm text-gray-600">Are you sure you want to delete this feedback? This action cannot be undone.</p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+            <button onclick="closeDeleteModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+                Cancel
+            </button>
+            <button onclick="confirmDelete()" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentFeedbackId = null;
+
+// Auto-dismiss session messages after 3 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const sessionMessages = document.querySelectorAll('.session-message');
+    sessionMessages.forEach(function(message) {
+        setTimeout(function() {
+            message.style.transition = 'opacity 0.5s ease-out';
+            message.style.opacity = '0';
+            setTimeout(function() {
+                if (message.parentElement) {
+                    message.remove();
+                }
+            }, 500);
+        }, 3000);
+    });
+});
+
+function openDeleteModal(feedbackId) {
+    currentFeedbackId = feedbackId;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    currentFeedbackId = null;
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+
+function confirmDelete() {
+    if (currentFeedbackId) {
+        document.getElementById('delete-form-' + currentFeedbackId).submit();
+    }
+}
+</script>
+
 </x-customer-layout>

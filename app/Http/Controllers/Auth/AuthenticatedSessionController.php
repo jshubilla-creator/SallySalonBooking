@@ -26,9 +26,26 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+        
+        // Check if user is banned
+        if ($user->is_banned) {
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Your account has been banned. Reason: ' . $user->ban_reason,
+            ]);
+        }
+
         $request->session()->regenerate();
 
-        $user = Auth::user();
+        // Check if 2FA is enabled
+        if ($user->two_factor_enabled) {
+            $user->generateTwoFactorCode();
+            // Code is sent via email through User model's sendTwoFactorEmail() method
+            return redirect()->route('two-factor.show');
+        }
+
+        session(['2fa_verified' => true]);
         $welcomeMessage = "Welcome back, {$user->name}! You have successfully logged in to Sally Salon.";
 
         // Redirect based on user role

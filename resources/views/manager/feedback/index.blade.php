@@ -10,7 +10,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg p-6 mb-6">
         <form method="GET" action="{{ route('manager.feedback.index') }}" class="space-y-4">
             <!-- Search Bar -->
             <div>
@@ -66,7 +66,7 @@
     <!-- Feedback List -->
     <div class="space-y-6">
         @forelse($feedback as $item)
-            <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg overflow-hidden">
                 <div class="px-6 py-4">
                     <div class="flex items-start justify-between">
                         <div class="flex items-start space-x-4">
@@ -123,14 +123,10 @@
 
                             <div class="flex space-x-1">
                                 <a href="{{ route('manager.feedback.show', $item) }}"
-                                   class="text-green-600 hover:text-green-900 text-sm">View</a>
-                                <form method="POST" action="{{ route('manager.feedback.destroy', $item) }}" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            onclick="return confirm('Are you sure you want to delete this feedback?')"
-                                            class="text-red-600 hover:text-red-900 text-sm">Delete</button>
-                                </form>
+                                   class="inline-flex items-center text-green-600 hover:text-green-900 text-sm">View</a>
+                                <button type="button"
+                                        onclick="openDeleteModal({{ $item->id }})"
+                                        class="text-red-600 hover:text-red-900 text-sm">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -153,4 +149,37 @@
             {{ $feedback->links() }}
         </div>
     @endif
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Feedback</h3>
+            <p class="text-sm text-gray-600 mb-4">Are you sure you want to permanently delete this feedback? This action cannot be undone.</p>
+            
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 transition-colors duration-200">
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal(feedbackId) {
+            document.getElementById('deleteForm').action = `/manager/feedback/${feedbackId}`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+    </script>
+
 </x-manager-layout>

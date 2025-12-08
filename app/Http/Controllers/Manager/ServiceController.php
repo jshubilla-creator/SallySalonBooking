@@ -23,14 +23,16 @@ class ServiceController extends Controller
         }
 
         // Filter by category
-        if ($request->has('category') && $request->category !== '') {
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
+        
         // Filter by status
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('is_active', $request->status === 'active');
-        }
+if ($request->filled('status') && $request->status !== 'all') {
+    $query->where('is_active', $request->status === 'active');
+
+}
 
         $services = $query->orderBy('name')->paginate(10);
         $categories = Service::distinct()->pluck('category')->filter();
@@ -54,7 +56,10 @@ class ServiceController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Service::create($request->all());
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+
+        Service::create($data);
 
         return redirect()->route('manager.services.index')
             ->with('success', 'Service created successfully.');
@@ -82,7 +87,11 @@ class ServiceController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        $service->update($request->all());
+        $data = $request->all();
+        $data['is_active'] = $request->has('is_active');
+
+
+        $service->update($data);
 
         return redirect()->route('manager.services.index')
             ->with('success', 'Service updated successfully.');

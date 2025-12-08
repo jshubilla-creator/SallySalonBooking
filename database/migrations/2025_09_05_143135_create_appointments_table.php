@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreignId('specialist_id')->constrained()->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             
-            $table->datetime('appointment_date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->date('appointment_date');
+            $table->datetime('start_time');
+            $table->datetime('end_time');
             
             $table->enum('status', [
                 'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'rescheduled'

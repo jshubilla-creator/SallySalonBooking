@@ -7,18 +7,21 @@
                 <p class="mt-2 text-lg text-gray-600">Update {{ $inventory->name }}</p>
             </div>
             <a href="{{ route('manager.inventory.index') }}"
-               class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+               class="flex items-center justify-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
                 Back to Inventory
             </a>
         </div>
     </div>
 
-    <div class="max-w-2xl">
+    <div class="max-w-2xl mx-auto">
         <form action="{{ route('manager.inventory.update', $inventory) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow rounded-lg p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Item Name -->
                     <div class="md:col-span-2">
@@ -112,7 +115,7 @@
                         <label for="unit_price" class="block text-sm font-medium text-gray-700 mb-2">Unit Price</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">$</span>
+                                <span class="text-gray-500 sm:text-sm">₱</span>
                             </div>
                             <input type="number"
                                    name="unit_price"
