@@ -33,9 +33,8 @@
             <nav class="relative z-10 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 shadow-lg">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center h-20">
-                        <div class="flex items-center space-x-3">
+                        <div class="flex items-center">
                             <img src="{{ asset('SallySalon.png') }}" alt="Sally Salon" class="h-16 w-16">
-                            <span class="text-2xl font-bold text-white">Sally Salon</span>
                         </div>
                         <div class="flex items-center space-x-3">
                             <a href="{{ route('login') }}" class="text-white hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded-lg font-medium transition-all">Sign In</a>
