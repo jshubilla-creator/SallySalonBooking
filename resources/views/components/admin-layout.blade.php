@@ -33,7 +33,7 @@
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto shadow-lg">
                     <div class="flex items-center flex-shrink-0 px-4" :class="sidebarOpen ? 'justify-between' : 'justify-center'">
                         <a href="{{ route('admin.dashboard') }}">
-                            <img src="{{ asset('SallySalon.png') }}" alt="Sally Salon Logo" class="object-contain" :class="sidebarOpen ? 'w-24 h-24' : 'w-12 h-12'">
+                            <img src="{{ asset('SallySalon.png') }}" alt="Sally Salon Logo" class="object-contain aspect-square" :class="sidebarOpen ? 'w-24 h-24' : 'w-12 h-12'">
                         </a>
                         <button @click="sidebarOpen = !sidebarOpen" class="p-1 rounded-md text-gray-600 hover:text-gray-900">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
