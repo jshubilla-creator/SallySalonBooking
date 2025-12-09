@@ -87,48 +87,53 @@
             <!-- Main content -->
             <div class="flex flex-col w-0 flex-1 overflow-hidden">
                 <!-- Top header -->
-                <div class="relative z-10 flex-shrink-0 flex h-20 shadow bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
-                    <div class="flex-1 px-4 flex justify-between">
-                        <div class="flex-1 flex">
-                            <div class="w-full flex md:ml-0">
-                                <div class="relative w-full text-gray-400 focus-within:text-gray-600">
-                                          
-                                </div>
-                            </div>
+                <div class="relative z-10 flex-shrink-0 flex h-20 shadow-lg bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600">
+                    <div class="flex-1 px-4 flex justify-between items-center">
+                        <div class="flex-1 flex items-center">
+                            <h2 class="text-2xl font-bold text-white font-salon">Sally Salon Admin</h2>
                         </div>
-                        <div class="ml-4 flex items-center md:ml-6">
+                        <div class="ml-4 flex items-center md:ml-6 space-x-4">
                             <!-- Profile dropdown -->
                             @auth
-                                <div class="ml-3 relative">
+                                <div class="relative">
                                     <div>
-                                        <button type="button" class="max-w-xs bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500" id="user-menu-button">
-                                            <span class="sr-only">Open user menu</span>
+                                        <button type="button" class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-600" id="user-menu-button">
                                             @if (Auth::user()->profile_picture)
-                                                <img src="{{ Auth::user()->profile_picture_url }}" alt="Profile Picture" class="h-8 w-8 rounded-full object-cover">
+                                                <img src="{{ Auth::user()->profile_picture_url }}" alt="Profile Picture" class="h-10 w-10 rounded-full object-cover border-2 border-white">
                                             @else
-                                                <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-purple-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                                <div class="h-10 w-10 rounded-full bg-white flex items-center justify-center border-2 border-white">
+                                                    <span class="text-lg font-bold text-purple-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
                                                 </div>
                                             @endif
-
-                                            <span class="ml-2 text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
+                                            <span class="text-sm font-medium text-white">{{ auth()->user()->name }}</span>
+                                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
                                         </button>
                                     </div>
-                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
-                                        <a href="{{ route('admin.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Your Profile</a>
+                                    <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-xl py-2 bg-white ring-1 ring-black ring-opacity-5 hidden" id="user-menu">
+                                        <a href="{{ route('admin.profile.edit') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 transition-colors">
+                                            <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                            Your Profile
+                                        </a>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
-                                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">
+                                            <button type="submit" class="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 transition-colors">
+                                                <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                                </svg>
                                                 Sign out
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             @else
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('login') }}" class="px-3 py-2 text-sm text-gray-700 hover:underline">Log in</a>
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">Log in</a>
                                     @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="px-3 py-2 text-sm text-gray-700 hover:underline">Register</a>
+                                        <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium bg-white text-purple-600 rounded-lg hover:bg-opacity-90 transition-all">Register</a>
                                     @endif
                                 </div>
                             @endauth

@@ -31,9 +31,9 @@
             <div class="absolute z-10 inset-0 bg-black/5 pointer-events-none"></div>
 
             <!-- Top Navigation -->
-            <nav class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 shadow-lg">
+            <nav class="bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 shadow-lg">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-20">
+                    <div class="flex justify-between h-20 items-center">
                         <div class="flex items-center">
                             <!-- Logo -->
                             <div class="flex-shrink-0">
@@ -43,25 +43,25 @@
                                 </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden md:ml-6 md:flex md:space-x-8 back">
+                            <div class="hidden md:ml-6 md:flex md:space-x-6">
                                 <a href="{{ route('customer.dashboard') }}"
-                                   class="inline-flex items-center px-1 pt-1 text-sm font-medium {{ request()->routeIs('customer.dashboard') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.dashboard') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
                                     Home
                                 </a>
                                 <a href="{{ route('customer.services.index') }}"
-                                   class="inline-flex items-center px-1 pt-1 text-sm font-medium {{ request()->routeIs('customer.services.*') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.services.*') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
                                     Services
                                 </a>
                                 <a href="{{ route('customer.specialists.index') }}"
-                                   class="inline-flex items-center px-1 pt-1 text-sm font-medium {{ request()->routeIs('customer.specialists.*') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.specialists.*') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
                                     Specialists
                                 </a>
                                 <a href="{{ route('customer.appointments.create') }}"
-                                   class="inline-flex items-center px-1 pt-1 text-sm font-medium {{ request()->routeIs('customer.appointments.create') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.appointments.create') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
                                     Book Appointment
                                 </a>
                                 <a href="{{ route('customer.contact') }}"
-                                   class="inline-flex items-center px-1 pt-1 text-sm font-medium {{ request()->routeIs('customer.contact') ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-500 hover:text-gray-700' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.contact') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
                                     Contact
                                 </a>
                             </div>
@@ -72,40 +72,55 @@
                             @auth
                                 <!-- User dropdown -->
                                 <div class="relative">
-                                    <button type="button" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" id="user-menu-button">
-                                        <span class="sr-only">Open user menu</span>
+                                    <button type="button" class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all focus:outline-none focus:ring-2 focus:ring-white" id="user-menu-button">
                                         @if (Auth::user()->profile_picture)
-                                            <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_picture_url }}" alt="Profile Picture">
+                                            <img class="h-10 w-10 rounded-full object-cover border-2 border-white" src="{{ Auth::user()->profile_picture_url }}" alt="Profile Picture">
                                         @else
-                                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                <span class="text-sm font-medium text-green-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                                            <div class="h-10 w-10 rounded-full bg-white flex items-center justify-center border-2 border-white">
+                                                <span class="text-lg font-bold text-purple-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
                                             </div>
                                         @endif
-                                        <span class="ml-2 text-gray-700 font-medium">{{ Auth::user()->name }}</span>
+                                        <span class="text-sm font-medium text-white">{{ Auth::user()->name }}</span>
+                                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
                                     </button>
 
                                     <!-- Dropdown menu -->
-                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 ring-1 ring-black ring-opacity-5 hidden z-50" id="user-menu">
-                                        <a href="{{ route('customer.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Your Profile</a>
+                                    <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-xl py-2 bg-white ring-1 ring-black ring-opacity-5 hidden z-50" id="user-menu">
+                                        <a href="{{ route('customer.profile.edit') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 transition-colors">
+                                            <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                            Your Profile
+                                        </a>
 
                                         {{-- Feedback link: visible to customers only --}}
                                         @if(Auth::user() && Auth::user()->hasRole('customer'))
-                                            <a href="{{ route('customer.feedback.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Feedback</a>
+                                            <a href="{{ route('customer.feedback.index') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 transition-colors">
+                                                <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                                </svg>
+                                                Feedback
+                                            </a>
                                         @endif
 
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
-                                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">
+                                            <button type="submit" class="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 transition-colors">
+                                                <svg class="h-5 w-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                                </svg>
                                                 Sign out
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             @else
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('login') }}" class="px-3 py-2 text-sm text-gray-700 hover:underline">Log in</a>
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">Log in</a>
                                     @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="px-3 py-2 text-sm text-gray-700 hover:underline">Register</a>
+                                        <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium bg-white text-purple-600 rounded-lg hover:bg-opacity-90 transition-all">Register</a>
                                     @endif
                                 </div>
                             @endauth
