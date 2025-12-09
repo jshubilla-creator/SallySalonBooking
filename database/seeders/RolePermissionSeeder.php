@@ -16,9 +16,9 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Create roles
-        $adminRole = Role::create(['name' => 'admin']);
-        $managerRole = Role::create(['name' => 'manager']);
-        $customerRole = Role::create(['name' => 'customer']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $managerRole = Role::firstOrCreate(['name' => 'manager']);
+        $customerRole = Role::firstOrCreate(['name' => 'customer']);
 
         // Create permissions
         $permissions = [
@@ -70,7 +70,7 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Assign permissions to roles
@@ -95,35 +95,47 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         // Create default admin user
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@salon.com',
-            'password' => bcrypt('password'),
-            'terms_accepted' => true,
-            'terms_accepted_at' => now(),
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@salon.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('password'),
+                'terms_accepted' => true,
+                'terms_accepted_at' => now(),
+            ]
+        );
+        if (!$admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
 
         // Create default manager user
-        $manager = User::create([
-            'name' => 'Manager User',
-            'email' => 'manager@salon.com',
-            'password' => bcrypt('password'),
-            'terms_accepted' => true,
-            'terms_accepted_at' => now(),
-        ]);
-        $manager->assignRole('manager');
+        $manager = User::firstOrCreate(
+            ['email' => 'manager@salon.com'],
+            [
+                'name' => 'Manager User',
+                'password' => bcrypt('password'),
+                'terms_accepted' => true,
+                'terms_accepted_at' => now(),
+            ]
+        );
+        if (!$manager->hasRole('manager')) {
+            $manager->assignRole('manager');
+        }
 
         // Create sample customer
-        $customer = User::create([
-            'name' => 'John Doe',
-            'email' => 'customer@example.com',
-            'password' => bcrypt('password'),
-            'phone' => '+1234567890',
-            'address' => '123 Main St, City, State',
-            'terms_accepted' => true,
-            'terms_accepted_at' => now(),
-        ]);
-        $customer->assignRole('customer');
+        $customer = User::firstOrCreate(
+            ['email' => 'customer@example.com'],
+            [
+                'name' => 'John Doe',
+                'password' => bcrypt('password'),
+                'phone' => '+1234567890',
+                'address' => '123 Main St, City, State',
+                'terms_accepted' => true,
+                'terms_accepted_at' => now(),
+            ]
+        );
+        if (!$customer->hasRole('customer')) {
+            $customer->assignRole('customer');
+        }
     }
 }
