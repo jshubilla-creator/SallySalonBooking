@@ -6,7 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }} - Sally Salon Admin Panel</title>
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/png" href="{{ asset('SallySalon.png') }}">
+        <link rel="shortcut icon" type="image/png" href="{{ asset('SallySalon.png') }}">
 
         <!-- Salon Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
