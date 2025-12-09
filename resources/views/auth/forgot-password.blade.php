@@ -15,7 +15,7 @@
             </div>
 
             <!-- Forgot Password Form -->
-            <div class="bg-pink/90 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6">
+            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6">
                 <!-- Session Status -->
                 @if (session('status'))
                     <div class="p-3 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 border border-green-200 text-green-800 rounded-md text-sm session-message" data-type="status">
