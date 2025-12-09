@@ -38,7 +38,7 @@
                 <div class="flex flex-col flex-grow pt-5 bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 overflow-y-auto shadow-lg">
                     <div class="flex items-center flex-shrink-0 px-4" :class="sidebarOpen ? 'justify-between' : 'justify-center'">
                         <a href="{{ route('manager.dashboard') }}">
-                            <img src="{{ asset('SallySalon.png') }}" alt="Sally Salon Logo" :class="sidebarOpen ? 'w-20 h-20' : 'w-10 h-10'">
+                            <img src="{{ asset('SallySalon.png') }}" alt="Sally Salon Logo" class="object-contain aspect-square" :class="sidebarOpen ? 'w-24 h-24' : 'w-16 h-16'">
                         </a>
                         <button @click="sidebarOpen = !sidebarOpen" class="p-1 rounded-md text-gray-600 hover:text-gray-900">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
