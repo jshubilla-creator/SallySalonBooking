@@ -152,27 +152,6 @@
                         @enderror
                     </div>
 
-                    <!-- Services -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Services *</label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            @foreach($services as $service)
-                                <div class="flex items-center">
-                                    <input type="checkbox"
-                                           name="services[]"
-                                           id="service_{{ $service->id }}"
-                                           value="{{ $service->id }}"
-                                           {{ in_array($service->id, old('services', [])) ? 'checked' : '' }}
-                                           class="rounded border-gray-300 text-green-600 focus:ring-green-500">
-                                    <label for="service_{{ $service->id }}" class="ml-2 text-sm text-gray-700">{{ $service->name }}</label>
-                                </div>
-                            @endforeach
-                        </div>
-                        @error('services')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Available Status -->
                     <div class="md:col-span-2">
                         <div class="flex items-center">
