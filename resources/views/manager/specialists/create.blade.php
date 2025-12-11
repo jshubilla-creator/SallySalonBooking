@@ -85,8 +85,9 @@
                         <input type="number"
                                name="experience_years"
                                id="experience_years"
-                               value="{{ old('experience_years', 0) }}"
+                               value="{{ old('experience_years') }}"
                                min="0"
+                               placeholder="Enter years of experience"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('experience_years') border-red-500 @enderror"
                                required>
                         @error('experience_years')
