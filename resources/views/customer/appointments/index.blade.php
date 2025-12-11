@@ -26,7 +26,7 @@
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Confirmed
                                         </span>
-                                        @if($appointment->payment_status !== 'paid')
+                                        @if(!isset($appointment->payment_status) || $appointment->payment_status !== 'paid')
                                             <a href="{{ route('customer.payments.show', $appointment) }}" 
                                                class="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
                                                 Pay Now
@@ -41,6 +41,11 @@
                                             Cancelled
                                         </span>
                                     @endif
+                                    
+                                    <a href="{{ route('customer.appointments.show', $appointment) }}" 
+                                       class="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
                         </div>

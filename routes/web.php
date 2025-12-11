@@ -45,7 +45,7 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
 
     Route::get('/appointments/create', [CustomerAppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [CustomerAppointmentController::class, 'store'])->name('appointments.store');
-    Route::post('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::patch('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel');
     Route::get('/appointments/specialists', [CustomerAppointmentController::class, 'getSpecialists'])->name('appointments.specialists');
 
     Route::get('/appointments/booked-slots', [CustomerAppointmentController::class, 'getBookedTimeSlots'])->name('appointments.booked-slots');

@@ -76,8 +76,8 @@ class AppointmentController extends Controller
                 ->whereIn('status', ['pending', 'confirmed'])
                 ->where(function ($query) use ($startTime, $endTime) {
                     $query->where(function ($q) use ($startTime, $endTime) {
-                        $q->where('start_time', '<', $endTime->format('H:i:s'))
-                        ->where('end_time', '>', $startTime->format('H:i:s'));
+                        $q->where('start_time', '<', $endTime)
+                        ->where('end_time', '>', $startTime);
                     });
                 })
                 ->exists();
@@ -110,9 +110,9 @@ class AppointmentController extends Controller
             'user_id' => auth()->id(),
             'service_id' => $service->id,
             'specialist_id' => $specialist->id,
-            'appointment_date' => $startTime->format('Y-m-d H:i:s'),
-            'start_time' => $startTime->format('Y-m-d H:i:s'),
-            'end_time' => $endTime->format('Y-m-d H:i:s'),
+            'appointment_date' => $startTime,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
             'status' => 'pending',
             'notes' => $request->notes,
             'is_home_service' => $request->has('is_home_service'),
