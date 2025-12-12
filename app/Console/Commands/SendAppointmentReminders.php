@@ -44,7 +44,7 @@ class SendAppointmentReminders extends Command
         foreach ($appointments as $appointment) {
             if ($appointment->user->email) {
                 try {
-                    Mail::to($appointment->user->email)->send(new AppointmentReminderMail($appointment));
+                    // Mail::to($appointment->user->email)->send(new AppointmentReminderMail($appointment));
                     $sentCount++;
                     $this->line("Reminder sent to {$appointment->user->name} ({$appointment->user->email})");
                 } catch (\Exception $e) {
