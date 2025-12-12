@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Models\Appointment;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AppointmentReminderMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\AppointmentReminderMail;
 
 class SendAppointmentReminders extends Command
 {

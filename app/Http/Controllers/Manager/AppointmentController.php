@@ -10,9 +10,9 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Mail\AppointmentDeletedMail;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AppointmentApprovedMail; 
+// use App\Mail\AppointmentDeletedMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\AppointmentApprovedMail;
 
 
 class AppointmentController extends Controller
