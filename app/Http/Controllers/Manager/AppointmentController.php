@@ -10,9 +10,9 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Mail\AppointmentDeletedMail;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AppointmentApprovedMail; 
+// use App\Mail\AppointmentDeletedMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\AppointmentApprovedMail;
 
 
 class AppointmentController extends Controller
@@ -152,9 +152,9 @@ class AppointmentController extends Controller
                 $reason = $request->deletion_reason;
                 $customerEmail = $appointment->user->email;
 
-                if ($customerEmail) {
-                    Mail::to($customerEmail)->send(new AppointmentDeletedMail($appointment, $reason));
-                }
+                // if ($customerEmail) {
+                //     Mail::to($customerEmail)->send(new AppointmentDeletedMail($appointment, $reason));
+                // }
 
                 $appointment->delete();
 
@@ -179,17 +179,17 @@ class AppointmentController extends Controller
             $notifications = [];
 
             // Send email if enabled
-            if ($customerEmail && ($notificationSettings['email_notifications'] ?? false) && ($notificationSettings['sms_confirmations'] ?? false)) {
-                Mail::to($customerEmail)->send(new AppointmentApprovedMail($appointment));
-                $notifications[] = 'email';
-            }
+            // if ($customerEmail && ($notificationSettings['email_notifications'] ?? false) && ($notificationSettings['sms_confirmations'] ?? false)) {
+            //     Mail::to($customerEmail)->send(new AppointmentApprovedMail($appointment));
+            //     $notifications[] = 'email';
+            // }
 
 
 
             $message = 'Appointment approved successfully.';
-            if (!empty($notifications)) {
-                $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
-            }
+            // if (!empty($notifications)) {
+            //     $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
+            // }
 
             return back()->with('success', $message);
         }
@@ -214,17 +214,17 @@ class AppointmentController extends Controller
         $notifications = [];
 
         // Send email if enabled
-        if ($customerEmail && ($notificationSettings['email_notifications'] ?? false)) {
-            Mail::to($customerEmail)->send(new AppointmentDeletedMail($appointment, $reason));
-            $notifications[] = 'email';
-        }
+        // if ($customerEmail && ($notificationSettings['email_notifications'] ?? false)) {
+        //     Mail::to($customerEmail)->send(new AppointmentDeletedMail($appointment, $reason));
+        //     $notifications[] = 'email';
+        // }
 
 
 
         $message = 'Appointment cancelled successfully.';
-        if (!empty($notifications)) {
-            $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
-        }
+        // if (!empty($notifications)) {
+        //     $message .= ' ' . implode(' and ', $notifications) . ' notification sent.';
+        // }
 
         return back()->with('success', $message);
     }

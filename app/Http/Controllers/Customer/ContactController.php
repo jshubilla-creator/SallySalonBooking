@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ContactMessageMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\ContactMessageMail;
 use App\Services\SettingsService;
 
 class ContactController extends Controller
@@ -50,7 +50,7 @@ class ContactController extends Controller
         $service = new SettingsService();
         $recipient = $service->get('salon_email', config('mail.from.address', 'ptc.johnalexishubilla@gmail.com'));
 
-        Mail::to($recipient)->send(new ContactMessageMail($validated));
+        // Mail::to($recipient)->send(new ContactMessageMail($validated));
 
         return back()->with('success', 'Your message has been sent successfully!');
     }

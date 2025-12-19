@@ -62,7 +62,7 @@
                                            id="profile_picture"
                                            accept="image/*"
                                            onchange="previewImage(this)"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('profile_picture') border-red-500 @enderror">
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     @error('profile_picture')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -75,8 +75,8 @@
                             <input type="text"
                                    name="name"
                                    id="name"
-                                   value="{{ old('name', $user->name) }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('name') border-red-500 @enderror"
+                                   value="{{ old('name', $user->name ?? '') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                    required>
                             @error('name')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -89,8 +89,8 @@
                             <input type="email"
                                    name="email"
                                    id="email"
-                                   value="{{ old('email', $user->email) }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('email') border-red-500 @enderror"
+                                   value="{{ old('email', $user->email ?? '') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                    required>
                             @error('email')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -103,8 +103,8 @@
                             <input type="tel"
                                    name="phone"
                                    id="phone"
-                                   value="{{ old('phone', $user->phone) }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('phone') border-red-500 @enderror">
+                                   value="{{ old('phone', $user->phone ?? '') }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                             @error('phone')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -116,7 +116,7 @@
                             <textarea name="address"
                                       id="address"
                                       rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('address') border-red-500 @enderror">{{ old('address', $user->address) }}</textarea>
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('address', $user->address ?? '') }}</textarea>
                             @error('address')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -129,7 +129,7 @@
                                    name="date_of_birth"
                                    id="date_of_birth"
                                    value="{{ old('date_of_birth', $user->date_of_birth?->format('Y-m-d')) }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('date_of_birth') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                             @error('date_of_birth')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -140,11 +140,11 @@
                             <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
                             <select name="gender"
                                     id="gender"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('gender') border-red-500 @enderror">
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                                 <option value="">Select Gender</option>
-                                <option value="male" {{ old('gender', $user->gender) === 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ old('gender', $user->gender) === 'female' ? 'selected' : '' }}>Female</option>
-                                <option value="other" {{ old('gender', $user->gender) === 'other' ? 'selected' : '' }}>Other</option>
+                                <option value="male" {{ old('gender', $user->gender ?? '') === 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender', $user->gender ?? '') === 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ old('gender', $user->gender ?? '') === 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                             @error('gender')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -157,7 +157,7 @@
                                 <input type="checkbox" 
                                        name="two_factor_enabled" 
                                        value="1" 
-                                       {{ $user->two_factor_enabled ? 'checked' : '' }}
+                                       {{ ($user->two_factor_enabled ?? false) ? 'checked' : '' }}
                                        class="rounded border-gray-300 text-pink-600 shadow-sm focus:ring-pink-500">
                                 <span class="ml-2 text-sm text-gray-700">Enable Two-Factor Authentication (Email)</span>
                             </label>
@@ -210,7 +210,7 @@
                             <input type="password" name="password_confirmation" id="password_confirmation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
                         </div>
 
-                        @if($user->two_factor_enabled)
+                        @if($user->two_factor_enabled ?? false)
                         <!-- 2FA Code -->
                         <div>
                             <label for="two_factor_code_password" class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
@@ -218,7 +218,7 @@
                                 <input type="text"
                                        name="two_factor_code"
                                        id="two_factor_code_password"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('two_factor_code') border-red-500 @enderror"
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                        placeholder="Enter 6-digit code"
                                        maxlength="6"
                                        required>
@@ -264,7 +264,7 @@
                             @enderror
                         </div>
 
-                        @if($user->two_factor_enabled)
+                        @if($user->two_factor_enabled ?? false)
                         <!-- 2FA Code -->
                         <div>
                             <label for="two_factor_code_delete" class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
@@ -272,7 +272,7 @@
                                 <input type="text"
                                        name="two_factor_code"
                                        id="two_factor_code_delete"
-                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('two_factor_code') border-red-500 @enderror"
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                        placeholder="Enter 6-digit code"
                                        maxlength="6"
                                        required>

@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Models\Appointment;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AppointmentReminderMail;
+// use Illuminate\Support\Facades\Mail;
+// use App\Mail\AppointmentReminderMail;
 
 class SendAppointmentReminders extends Command
 {
@@ -44,7 +44,7 @@ class SendAppointmentReminders extends Command
         foreach ($appointments as $appointment) {
             if ($appointment->user->email) {
                 try {
-                    Mail::to($appointment->user->email)->send(new AppointmentReminderMail($appointment));
+                    // Mail::to($appointment->user->email)->send(new AppointmentReminderMail($appointment));
                     $sentCount++;
                     $this->line("Reminder sent to {$appointment->user->name} ({$appointment->user->email})");
                 } catch (\Exception $e) {

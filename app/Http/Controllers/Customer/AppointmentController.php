@@ -8,7 +8,7 @@ use App\Models\Service;
 use App\Models\Specialist;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
+// use Illuminate\Support\Facades\Mail;
 
 class AppointmentController extends Controller
 {
@@ -158,7 +158,7 @@ class AppointmentController extends Controller
 
         // Send booking confirmation email
         $appointment->load(['user', 'service', 'specialist']);
-        \Mail::to($appointment->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
+        // \Mail::to($appointment->user->email)->send(new \App\Mail\AppointmentBookedMail($appointment));
 
         return redirect()->route('customer.dashboard')
             ->with('success', 'Appointment booked successfully!');
