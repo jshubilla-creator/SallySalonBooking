@@ -54,4 +54,6 @@ class Specialist extends Model
     {
         return $query->where('specialization', $specialization);
     }
+
+
 }

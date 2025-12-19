@@ -493,7 +493,7 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-blue-50 rounded-lg shadow-lg max-w-md w-full">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-lg max-w-md w-full">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900" id="delete-modal-title">Confirm Deletion</h3>
             </div>

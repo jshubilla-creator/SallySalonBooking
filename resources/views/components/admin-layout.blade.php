@@ -106,7 +106,7 @@
                                                     <span class="text-lg font-bold text-purple-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
                                                 </div>
                                             @endif
-                                            <span class="text-sm font-medium text-white">{{ auth()->user()->name }}</span>
+                                            <span class="text-sm font-medium text-black">{{ auth()->user()->name }}</span>
                                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                             </svg>

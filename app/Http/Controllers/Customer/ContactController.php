@@ -54,4 +54,19 @@ class ContactController extends Controller
 
         return back()->with('success', 'Your message has been sent successfully!');
     }
+
+    public function clearCache()
+    {
+        try {
+            \Artisan::call('cache:clear');
+            \Artisan::call('config:clear');
+            \Artisan::call('route:clear');
+            \Artisan::call('view:clear');
+            \Artisan::call('optimize:clear');
+            
+            return back()->with('success', '✅ All application caches cleared successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', '⚠️ Failed to clear cache: ' . $e->getMessage());
+        }
+    }
 }

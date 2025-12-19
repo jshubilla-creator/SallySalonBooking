@@ -71,9 +71,13 @@
                     <div class="flex items-start justify-between">
                         <div class="flex items-start space-x-4">
                             <div class="flex-shrink-0">
-                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                                    <span class="text-sm font-medium text-green-600">{{ substr($item->user->name, 0, 1) }}</span>
-                                </div>
+                                @if($item->user->profile_picture_url)
+                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $item->user->profile_picture_url }}" alt="{{ $item->user->name }}">
+                                @else
+                                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-green-600">{{ substr($item->user->name, 0, 1) }}</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center space-x-2">
@@ -152,7 +156,7 @@
 
     <!-- Delete Modal -->
     <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Feedback</h3>
             <p class="text-sm text-gray-600 mb-4">Are you sure you want to permanently delete this feedback? This action cannot be undone.</p>
             

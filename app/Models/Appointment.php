@@ -13,6 +13,7 @@ class Appointment extends Model
         'user_id',
         'specialist_id',
         'service_id',
+        'service_variation',
         'appointment_date',
         'start_time',
         'end_time',

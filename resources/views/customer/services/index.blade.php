@@ -14,28 +14,23 @@
                         data-category="all">
                     All Services
                 </button>
-                <button onclick="filterServices('Hair')"
-                        class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 filter-btn"
-                        data-category="Hair">
-                    Hair
-                </button>
-                <button onclick="filterServices('Nail')"
-                        class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 filter-btn"
-                        data-category="Nail">
-                    Nail Care
-                </button>
-                <button onclick="filterServices('Beauty')"
-                        class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 filter-btn"
-                        data-category="Beauty">
-                    Beauty
-                </button>
+                @php
+                    $categories = $services->pluck('category')->unique()->sort();
+                @endphp
+                @foreach($categories as $category)
+                    <button onclick="filterServices('{{ $category }}')"
+                            class="px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 filter-btn"
+                            data-category="{{ $category }}">
+                        {{ $category }}
+                    </button>
+                @endforeach
             </div>
         </div>
 
         <!-- Services Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             @foreach($services as $service)
-                <div class="bg-blue-100 rounded-lg shadow-md overflow-hidden service-card" data-category="{{ $service->category }}" data-service-id="{{ $service->id }}">
+                <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md overflow-hidden service-card" data-category="{{ $service->category }}" data-service-id="{{ $service->id }}">
                     @if($service->image)
                         <img src="{{ $service->image }}" alt="{{ $service->name }}" class="w-full h-48 object-cover">
                     @else
@@ -61,14 +56,34 @@
                             <div class="text-sm text-gray-500">{{ $service->duration_minutes }} min</div>
                         </div>
 
+                        <!-- Service Details (Initially Hidden) -->
+                        <div id="details-{{ $service->id }}" class="hidden mt-4 pt-4 border-t border-gray-200">
+                            <div class="space-y-4">
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <h5 class="font-medium text-gray-900 mb-2">What to Expect:</h5>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Professional service by our certified specialists</li>
+                                        <li>• High-quality products and equipment</li>
+                                        <li>• Clean and sanitized environment</li>
+                                        <li>• Satisfaction guarantee</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
                         <div class="flex space-x-2">
-                            <button onclick="viewServiceDetails({{ $service->id }})"
-                                    class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200">
-                                View Details
+                            <button onclick="toggleServiceDetails({{ $service->id }})"
+                                    class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                                <span id="btn-text-{{ $service->id }}">View Details</span>
                             </button>
+                        </div>
+                        
+                        <!-- Book Now Button (shown when details are visible) -->
+                        <div id="book-btn-{{ $service->id }}" class="hidden mt-3">
                             <a href="{{ route('customer.appointments.create', ['service' => $service->id]) }}"
-                               class="flex-1 bg-white border border-green-600 text-green-600 px-4 py-2 rounded-md hover:bg-green-50 transition-colors duration-200 text-center">
-                                Book Now
+                               class="block w-full bg-green-600 text-white px-4 py-3 rounded-md hover:bg-green-700 transition-colors duration-200 text-center font-medium">
+                                📅 Book This Service Now
                             </a>
                         </div>
                     </div>
@@ -87,29 +102,7 @@
         @endif
     </div>
 
-    <!-- Service Details Modal -->
-    <div id="serviceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50" onclick="closeServiceModal()">
-        <div class="flex items-center justify-center min-h-screen p-4" onclick="event.stopPropagation()">
-            <div class="bg-blue-50 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">Service Details</h3>
-                </div>
-                <div id="serviceDetails" class="px-6 py-4">
-                    <!-- Details will be loaded here -->
-                </div>
-                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-2">
-                    <button onclick="closeServiceModal()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
-                        Close
-                    </button>
-                    <button id="bookServiceBtn"
-                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md">
-                        Book This Service
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         function filterServices(category) {
@@ -135,88 +128,20 @@
             });
         }
 
-        function viewServiceDetails(serviceId) {
-            // Show loading state
-            document.getElementById('serviceDetails').innerHTML = `
-                <div class="flex items-center justify-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-                    <span class="ml-2 text-gray-600">Loading service details...</span>
-                </div>
-            `;
-
-            // Show modal
-            document.getElementById('serviceModal').classList.remove('hidden');
-
-            // Fetch service details via AJAX
-            fetch(`/customer/services/${serviceId}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('serviceDetails').innerHTML = `
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-start">
-                                <h4 class="text-xl font-semibold text-gray-900">${data.name}</h4>
-                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">${data.category}</span>
-                            </div>
-                            <p class="text-gray-600">${data.description}</p>
-                            <div class="flex justify-between items-center">
-                                <div class="text-2xl font-bold text-green-600">₱${parseFloat(data.price).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                                <div class="text-sm text-gray-500">${data.duration_minutes} min</div>
-                            </div>
-                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                                <h5 class="font-medium text-gray-900 mb-2">What to Expect:</h5>
-                                <ul class="text-sm text-gray-600 space-y-1">
-                                    <li>• Professional service by our certified specialists</li>
-                                    <li>• High-quality products and equipment</li>
-                                    <li>• Clean and sanitized environment</li>
-                                    <li>• Satisfaction guarantee</li>
-                                </ul>
-                            </div>
-                            ${data.feedback && data.feedback.length > 0 ? `
-                                <div class="mt-6">
-                                    <h5 class="font-medium text-gray-900 mb-3">Customer Reviews</h5>
-                                    <div class="space-y-3">
-                                        ${data.feedback.map(review => `
-                                            <div class="bg-white p-3 rounded-lg border">
-                                                <div class="flex items-center space-x-2 mb-2">
-                                                    <div class="flex text-yellow-400">
-                                                        ${Array.from({length: 5}, (_, i) => 
-                                                            i < review.rating 
-                                                                ? '<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
-                                                                : '<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>'
-                                                        ).join('')}
-                                                    </div>
-                                                    <span class="text-sm font-medium">${review.user_name}</span>
-                                                    <span class="text-sm text-gray-500">${review.created_at}</span>
-                                                </div>
-                                                <p class="text-sm text-gray-700">${review.comment}</p>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-
-                    document.getElementById('bookServiceBtn').onclick = function() {
-                        window.location.href = `/customer/appointments/create?service=${serviceId}`;
-                    };
-                })
-                .catch(error => {
-                    console.error('Error fetching service details:', error);
-                    document.getElementById('serviceDetails').innerHTML = `
-                        <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Error loading service details</h3>
-                            <p class="mt-1 text-sm text-gray-500">Please try again later.</p>
-                        </div>
-                    `;
-                });
-        }
-
-        function closeServiceModal() {
-            document.getElementById('serviceModal').classList.add('hidden');
+        function toggleServiceDetails(serviceId) {
+            const detailsDiv = document.getElementById(`details-${serviceId}`);
+            const bookBtn = document.getElementById(`book-btn-${serviceId}`);
+            const btnText = document.getElementById(`btn-text-${serviceId}`);
+            
+            if (detailsDiv.classList.contains('hidden')) {
+                detailsDiv.classList.remove('hidden');
+                bookBtn.classList.remove('hidden');
+                btnText.textContent = 'Hide Details';
+            } else {
+                detailsDiv.classList.add('hidden');
+                bookBtn.classList.add('hidden');
+                btnText.textContent = 'View Details';
+            }
         }
 
         // Notification system (same as in appointment booking)

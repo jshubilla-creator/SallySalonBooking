@@ -6,14 +6,49 @@
             <p class="mt-2 text-lg text-gray-600">Manage your account information and preferences</p>
         </div>
 
+        <!-- Success/Error Messages -->
+        @if (session('status') === 'profile-updated')
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                ✅ Profile updated successfully!
+            </div>
+        @endif
+        
+        @if (session('status') === 'password-updated')
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                ✅ Password updated successfully!
+            </div>
+        @endif
+        
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                ✅ {{ session('success') }}
+            </div>
+        @endif
+        
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                ❌ {{ session('error') }}
+            </div>
+        @endif
+        
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="space-y-6">
             <!-- Profile Information -->
-            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
+            <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Profile Information</h2>
                 </div>
                 <div class="p-6">
-                    <form method="post" action="{{ route('customer.profile.update') }}" class="space-y-6" enctype="multipart/form-data">
+                    <form method="post" action="{{ route('customer.profile.update') }}" class="space-y-6" enctype="multipart/form-data" onsubmit="console.log('Form onsubmit triggered'); return validateForm();">
                         @csrf
                         @method('patch')
 
@@ -132,7 +167,8 @@
                         <!-- Save Button -->
                         <div class="flex justify-end">
                             <button type="submit"
-                                    class="px-6 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    class="px-6 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    onclick="console.log('Form submitting...'); return true;">
                                 Save Changes
                             </button>
                         </div>
@@ -141,7 +177,7 @@
             </div>
 
             <!-- Change Password -->
-            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
+            <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Change Password</h2>
                 </div>
@@ -153,7 +189,7 @@
                         <!-- Current Password -->
                         <div>
                             <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                            <x-password-input name="current_password" id="current_password" class="w-full @error('current_password') border-red-500 @enderror" required />
+                            <input type="password" name="current_password" id="current_password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('current_password') border-red-500 @enderror" required>
                             @error('current_password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -162,7 +198,7 @@
                         <!-- New Password -->
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                            <x-password-input name="password" id="password" class="w-full @error('password') border-red-500 @enderror" required />
+                            <input type="password" name="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('password') border-red-500 @enderror" required>
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -171,7 +207,7 @@
                         <!-- Confirm Password -->
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                            <x-password-input name="password_confirmation" id="password_confirmation" class="w-full" required />
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
                         </div>
 
                         @if($user->two_factor_enabled)
@@ -206,7 +242,7 @@
             </div>
 
             <!-- Delete Account -->
-            <div class="bg-blue-100 rounded-lg shadow-md border border-gray-200">
+            <div class="bg-pink/90 backdrop-blur-md rounded-lg shadow-md border border-gray-200">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">Delete Account</h2>
                 </div>
@@ -222,7 +258,7 @@
                         <!-- Password Confirmation -->
                         <div>
                             <label for="delete_password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <x-password-input name="password" id="delete_password" placeholder="Enter your password to confirm" class="w-full @error('password') border-red-500 @enderror" required />
+                            <input type="password" name="password" id="delete_password" placeholder="Enter your password to confirm" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 @error('password') border-red-500 @enderror" required>
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -310,6 +346,25 @@
                     alert('Failed to send code. Please try again.');
                 }
             });
+        }
+        
+        function validateForm() {
+            console.log('Form validation called');
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            
+            if (!name.trim()) {
+                alert('Name is required');
+                return false;
+            }
+            
+            if (!email.trim()) {
+                alert('Email is required');
+                return false;
+            }
+            
+            console.log('Form validation passed');
+            return true;
         }
     </script>
 </x-customer-layout>

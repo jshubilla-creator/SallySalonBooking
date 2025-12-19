@@ -95,8 +95,8 @@
                                 <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
-                                            @if($appointment->user->profile_photo_path)
-                                                <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover" src="{{ Storage::url($appointment->user->profile_photo_path) }}" alt="{{ $appointment->user->name }}">
+                                            @if($appointment->user->profile_picture_url)
+                                                <img class="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover" src="{{ $appointment->user->profile_picture_url }}" alt="{{ $appointment->user->name }}">
                                             @else
                                                 <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-100 flex items-center justify-center">
                                                     <span class="text-xs sm:text-sm font-medium text-green-600">{{ substr($appointment->user->name, 0, 1) }}</span>
@@ -238,7 +238,7 @@
     </div>
 <!-- Global Cancel Modal -->
 <div id="cancelModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-lg p-6 w-full max-w-md">
         <h3 class="text-lg font-bold text-gray-900 mb-2">Cancel Appointment</h3>
         <p class="text-sm text-gray-600 mb-4">Please provide a reason for cancellation.</p>
 
@@ -262,7 +262,7 @@
 
 <!-- Global Delete Modal -->
 <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-blue-50 rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-lg p-6 w-full max-w-md">
         <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Appointment</h3>
         <p class="text-sm text-gray-600 mb-4">Please provide a reason for deletion. The customer will be notified.</p>
         

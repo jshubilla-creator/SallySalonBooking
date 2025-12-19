@@ -23,8 +23,8 @@
                 <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-start space-x-4">
                         <div class="flex-shrink-0">
-                            @if($feedback->user->profile_photo_path)
-                                <img class="h-12 w-12 rounded-full object-cover" src="{{ Storage::url($feedback->user->profile_photo_path) }}" alt="{{ $feedback->user->name }}">
+                            @if($feedback->user->profile_picture_url)
+                                <img class="h-12 w-12 rounded-full object-cover" src="{{ $feedback->user->profile_picture_url }}" alt="{{ $feedback->user->name }}">
                             @else
                                 <div class="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
                                     <span class="text-lg font-medium text-green-600">{{ substr($feedback->user->name, 0, 1) }}</span>
@@ -146,6 +146,20 @@
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Customer Information</h3>
 
+                    <div class="flex items-center space-x-4 mb-4">
+                        @if($feedback->user->profile_picture_url)
+                            <img class="h-16 w-16 rounded-full object-cover" src="{{ $feedback->user->profile_picture_url }}" alt="{{ $feedback->user->name }}">
+                        @else
+                            <div class="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                                <span class="text-xl font-medium text-green-600">{{ substr($feedback->user->name, 0, 1) }}</span>
+                            </div>
+                        @endif
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-900">{{ $feedback->user->name }}</h4>
+                            <p class="text-sm text-gray-500">{{ $feedback->user->email }}</p>
+                        </div>
+                    </div>
+
                     <div class="space-y-3">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Name</dt>
@@ -187,14 +201,11 @@
                             View Customer Profile
                         </a>
 
-                        <a href="{{ route('manager.reminders.send-manual', $feedback->user) }}"
-                           class="inline-flex justify-center items-center w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                <span>Send Manual Email</span>
-                            </div>
+                        <a href="{{ route('manager.reminders.create', ['user_id' => $feedback->user->id]) }}" class="inline-flex justify-center items-center w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Send Manual Email
                         </a>
 
 

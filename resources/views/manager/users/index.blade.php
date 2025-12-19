@@ -71,8 +71,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            @if($user->profile_image)
-                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->profile_image }}" alt="{{ $user->name }}">
+                                            @if($user->profile_picture_url)
+                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->profile_picture_url }}" alt="{{ $user->name }}">
                                             @else
                                                 <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
                                                     <span class="text-sm font-medium text-green-600">{{ substr($user->name, 0, 1) }}</span>
@@ -179,7 +179,7 @@
 
     <!-- Ban Modal -->
     <div id="banModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-blue-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100">
             <div class="mt-3 text-center">
                 <h3 class="text-lg font-medium text-gray-900">Ban User</h3>
                 <div class="mt-2 px-7 py-3">

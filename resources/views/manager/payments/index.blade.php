@@ -89,7 +89,7 @@
 
     <!-- Record Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
-        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Record Customer Payment</h2>
             <form id="paymentForm" method="POST">
                 @csrf
@@ -116,7 +116,7 @@
 
     <!-- Edit Payment Modal -->
     <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
-        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Edit Payment</h2>
             <form id="editForm" method="POST">
                 @csrf
@@ -145,7 +145,7 @@
 
     <!-- Delete Payment Modal -->
     <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 px-4">
-        <div class="bg-blue-50 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 animate-fadeIn">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Delete Payment Record</h2>
             <p class="text-gray-600 mb-6">Are you sure you want to delete this payment record? This will reset the payment status to pending.</p>
             <form id="deleteForm" method="POST">

@@ -63,6 +63,7 @@ class SpecialistController extends Controller
             'bio' => 'nullable|string|max:1000',
             'specialization' => 'required|string|max:255',
             'experience_years' => 'required|integer|min:0',
+            'profile_image' => 'nullable|url|max:500',
             'working_hours' => 'required|array',
             'is_available' => 'boolean',
             'services' => 'array',
@@ -97,17 +98,22 @@ class SpecialistController extends Controller
         return view('manager.specialists.show', compact('specialist'));
     }
 
-    // Fetch specialist data as JSON
     public function fetch($id)
-{
-    $specialist = Specialist::with(['services', 'appointments'])->find($id);
+    {
+        $specialist = Specialist::find($id);
+        
+        if (!$specialist) {
+            return response()->json(['error' => 'Specialist not found'], 404);
+        }
 
-    if (!$specialist) {
-        return response()->json(['error' => 'Specialist not found'], 404);
+        return response()->json([
+            'id' => $specialist->id,
+            'name' => $specialist->name,
+            'bio' => $specialist->bio,
+            'specialization' => $specialist->specialization,
+            'experience_years' => $specialist->experience_years
+        ]);
     }
-
-    return response()->json($specialist);
-}
 
 
     public function edit(Specialist $specialist)
@@ -126,6 +132,7 @@ class SpecialistController extends Controller
             'bio' => 'nullable|string|max:1000',
             'specialization' => 'required|string|max:255',
             'experience_years' => 'required|integer|min:0',
+            'profile_image' => 'nullable|url|max:500',
             'working_hours' => 'required|array',
             'services' => 'array',
             'services.*' => 'exists:services,id',

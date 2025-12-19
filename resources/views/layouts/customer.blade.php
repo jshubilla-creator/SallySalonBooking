@@ -45,23 +45,23 @@
                             <!-- Navigation Links -->
                             <div class="hidden md:ml-6 md:flex md:space-x-6">
                                 <a href="{{ route('customer.dashboard') }}"
-                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.dashboard') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.dashboard') ? 'bg-white bg-opacity-20 text-gray-800' : 'text-gray-800 hover:bg-white hover:bg-opacity-10' }}">
                                     Home
                                 </a>
                                 <a href="{{ route('customer.services.index') }}"
-                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.services.*') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.services.*') ? 'bg-white bg-opacity-20 text-gray-800' : 'text-gray-800 hover:bg-white hover:bg-opacity-10' }}">
                                     Services
                                 </a>
                                 <a href="{{ route('customer.specialists.index') }}"
-                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.specialists.*') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.specialists.*') ? 'bg-white bg-opacity-20 text-gray-800' : 'text-gray-800 hover:bg-white hover:bg-opacity-10' }}">
                                     Specialists
                                 </a>
                                 <a href="{{ route('customer.appointments.create') }}"
-                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.appointments.create') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.appointments.create') ? 'bg-white bg-opacity-20 text-gray-800' : 'text-gray-800 hover:bg-white hover:bg-opacity-10' }}">
                                     Book Appointment
                                 </a>
                                 <a href="{{ route('customer.contact') }}"
-                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.contact') ? 'bg-white bg-opacity-20 text-white' : 'text-white hover:bg-white hover:bg-opacity-10' }}">
+                                   class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all {{ request()->routeIs('customer.contact') ? 'bg-white bg-opacity-20 text-gray-800' : 'text-gray-800 hover:bg-white hover:bg-opacity-10' }}">
                                     Contact
                                 </a>
                             </div>
@@ -80,7 +80,7 @@
                                                 <span class="text-lg font-bold text-purple-600">{{ substr(Auth::user()->name, 0, 1) }}</span>
                                             </div>
                                         @endif
-                                        <span class="text-sm font-medium text-white">{{ Auth::user()->name }}</span>
+                                        <span class="text-sm font-medium text-black">{{ Auth::user()->name }}</span>
                                         <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
@@ -118,7 +118,7 @@
                                 </div>
                             @else
                                 <div class="flex items-center gap-3">
-                                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">Log in</a>
+                                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-gray-800 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">Log in</a>
                                     @if (Route::has('register'))
                                         <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-medium bg-white text-purple-600 rounded-lg hover:bg-opacity-90 transition-all">Register</a>
                                     @endif

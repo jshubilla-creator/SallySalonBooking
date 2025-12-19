@@ -29,35 +29,44 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
+            $validated = $request->validated();
 
-        // Handle regular profile update
-        $user->fill($request->validated());
-        
-        // Handle 2FA checkbox
-        $user->two_factor_enabled = $request->has('two_factor_enabled');
-        if (!$user->two_factor_enabled) {
-            $user->resetTwoFactorCode();
-        }
-
-        if ($request->hasFile('profile_picture')) {
-            // Delete old photo if it exists
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
+            // Handle regular profile update
+            $user->fill($validated);
+            
+            // Handle 2FA checkbox
+            $user->two_factor_enabled = $request->has('two_factor_enabled');
+            if (!$user->two_factor_enabled) {
+                $user->resetTwoFactorCode();
             }
 
-            // Store new photo
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->profile_picture = $path;
+            if ($request->hasFile('profile_picture')) {
+                // Delete old photo if it exists
+                if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                    Storage::disk('public')->delete($user->profile_picture);
+                }
+
+                // Store new photo
+                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $user->profile_picture = $path;
+            }
+
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+
+            $saved = $user->save();
+            
+            if ($saved) {
+                return Redirect::route('customer.profile.edit')->with('status', 'profile-updated');
+            } else {
+                return Redirect::route('customer.profile.edit')->with('error', 'Failed to save profile changes.');
+            }
+        } catch (\Exception $e) {
+            return Redirect::route('customer.profile.edit')->with('error', 'An error occurred: ' . $e->getMessage());
         }
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        return Redirect::route('customer.profile.edit')->with('status', 'profile-updated');
     }
 
     /**

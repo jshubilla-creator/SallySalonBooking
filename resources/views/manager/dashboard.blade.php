@@ -144,20 +144,6 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-2 gap-4">
 
-                    <!-- <a href="{{ route('manager.appointments.create') }}" class="relative group bg-green-50 p-6 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <div>
-                            <span class="rounded-lg inline-flex p-3 bg-green-500 text-white">
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="mt-4">
-                            <h3 class="text-lg font-medium text-gray-900">New Appointment</h3>
-                            <p class="mt-2 text-sm text-gray-500">Book a new appointment for a customer</p>
-                        </div>
-                    </a> -->
-
                     <a href="{{ route('manager.services.create') }}" class="relative group bg-pink-100 p-6 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 shadow">
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-purple-500 text-white">

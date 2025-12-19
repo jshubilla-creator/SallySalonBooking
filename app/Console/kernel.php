@@ -5,6 +5,9 @@ protected function schedule(Schedule $schedule)
 {
     // Schedule appointment reminders to run daily at 9 AM
     $schedule->command('appointments:send-reminders')->dailyAt('09:00');
+    
+    // Update specialist availability every 30 minutes
+    $schedule->command('specialists:update-availability')->everyThirtyMinutes();
 
     // Target expiry datetime (Manila timezone)
     $expiry = Carbon::parse('2025-10-24 00:00:00', 'Asia/Manila');

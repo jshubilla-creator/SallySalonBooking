@@ -51,6 +51,8 @@
                                           class="w-full px-3 py-2 border rounded-md">{{ old('salon_address', $settings['salon_address']) }}</textarea>
                             </div>
 
+
+
                             <div class="flex justify-end">
                                 <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md">Save Settings</button>
                             </div>

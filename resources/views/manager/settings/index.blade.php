@@ -152,6 +152,54 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <div>
+                            <label for="daily_booking_limit" class="block text-sm font-medium text-gray-700 mb-2">Daily Booking Limit *</label>
+                            <input type="number"
+                                   name="daily_booking_limit"
+                                   id="daily_booking_limit"
+                                   value="{{ old('daily_booking_limit', $settings['daily_booking_limit'] ?? 20) }}"
+                                   min="1"
+                                   max="100"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('daily_booking_limit') border-red-500 @enderror"
+                                   required>
+                            <p class="mt-1 text-sm text-gray-500">Maximum appointments per day (system-wide)</p>
+                            @error('daily_booking_limit')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="customer_daily_limit" class="block text-sm font-medium text-gray-700 mb-2">Customer Daily Limit *</label>
+                            <input type="number"
+                                   name="customer_daily_limit"
+                                   id="customer_daily_limit"
+                                   value="{{ old('customer_daily_limit', $settings['customer_daily_limit'] ?? 3) }}"
+                                   min="1"
+                                   max="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('customer_daily_limit') border-red-500 @enderror"
+                                   required>
+                            <p class="mt-1 text-sm text-gray-500">Maximum appointments per customer per day</p>
+                            @error('customer_daily_limit')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="specialist_daily_quota" class="block text-sm font-medium text-gray-700 mb-2">Specialist Daily Quota *</label>
+                            <input type="number"
+                                   name="specialist_daily_quota"
+                                   id="specialist_daily_quota"
+                                   value="{{ old('specialist_daily_quota', $settings['specialist_daily_quota'] ?? 8) }}"
+                                   min="1"
+                                   max="20"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('specialist_daily_quota') border-red-500 @enderror"
+                                   required>
+                            <p class="mt-1 text-sm text-gray-500">Maximum appointments per specialist per day</p>
+                            @error('specialist_daily_quota')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>
@@ -322,6 +370,31 @@
                 </button>
             </div>
         </form>
+
+        <!-- System Maintenance -->
+        <div class="bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-100 rounded-lg shadow-md border border-gray-200 mt-6">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-900">System Maintenance</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <form method="POST" action="{{ route('manager.settings.clearCache') }}">
+                        @csrf
+                        <h3 class="text-sm font-medium text-gray-900">Clear Cache</h3>
+                        <p class="text-sm text-gray-500">Clear application cache to improve performance</p>
+                    </div>
+                    <button type="submit"
+                            class="w-48 flex item-center justify-center flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />                                      
+                        </svg>
+                        Clear Cache
+                    </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
 
     </div>

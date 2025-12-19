@@ -10,6 +10,7 @@ return [
     |
     */
     'daily_booking_limit' => env('SALON_DAILY_BOOKING_LIMIT', 20),
+    'customer_daily_limit' => env('SALON_CUSTOMER_DAILY_LIMIT', 5),
     
     /*
     |--------------------------------------------------------------------------

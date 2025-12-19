@@ -145,7 +145,7 @@ class User extends Authenticatable
             'code' => $this->two_factor_code
         ], function ($message) {
             $message->to($this->email)
-                    ->subject('🔐 Sally Salon - Your Verification Code');
+                    ->subject('✨ Sally Salon - Your Beauty Access Code 💅');
         });
     }
 

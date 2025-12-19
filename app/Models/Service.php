@@ -14,6 +14,7 @@ class Service extends Model
         'description',
         'price',
         'duration_minutes',
+        'variations',
         'category',
         'is_active',
         'image',
@@ -22,6 +23,7 @@ class Service extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'is_active' => 'boolean',
+        'variations' => 'array',
     ];
 
     // Relationships

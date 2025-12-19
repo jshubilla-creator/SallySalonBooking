@@ -46,9 +46,11 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::get('/appointments/create', [CustomerAppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [CustomerAppointmentController::class, 'store'])->name('appointments.store');
     Route::patch('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::post('/appointments/{appointment}/cancel', [CustomerAppointmentController::class, 'cancel'])->name('appointments.cancel.post');
     Route::get('/appointments/specialists', [CustomerAppointmentController::class, 'getSpecialists'])->name('appointments.specialists');
 
     Route::get('/appointments/booked-slots', [CustomerAppointmentController::class, 'getBookedTimeSlots'])->name('appointments.booked-slots');
+    Route::get('/appointments/daily-counts', [CustomerAppointmentController::class, 'getDailyBookingCounts'])->name('appointments.daily-counts');
     Route::get('/appointments/{appointment}', [CustomerAppointmentController::class, 'show'])
     ->name('appointments.show');
 
@@ -65,6 +67,8 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
 
     Route::post('/contact', [App\Http\Controllers\Customer\ContactController::class, 'store'])
         ->name('contact.store');
+    Route::post('/contact/clear-cache', [App\Http\Controllers\Customer\ContactController::class, 'clearCache'])
+        ->name('contact.clearCache');
 
     // Payments
     Route::get('/appointments/{appointment}/payment', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('payments.show');
@@ -121,6 +125,11 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')
     // Settings
     Route::get('/settings', [App\Http\Controllers\Manager\SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [App\Http\Controllers\Manager\SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/clear-cache', [App\Http\Controllers\Manager\SettingsController::class, 'clearCache'])->name('settings.clearCache');
+    
+    // Reminders
+    Route::get('/reminders/create', [App\Http\Controllers\Manager\ReminderController::class, 'create'])->name('reminders.create');
+    Route::post('/reminders/send-manual', [App\Http\Controllers\Manager\ReminderController::class, 'sendManual'])->name('reminders.send-manual');
 
 
 
@@ -207,3 +216,5 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+// Service variations route
+Route::get('/customer/services/{service}/variations', [App\Http\Controllers\Customer\ServiceController::class, 'getVariations'])->name('customer.services.variations');

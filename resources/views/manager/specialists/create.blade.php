@@ -153,6 +153,29 @@
                         @enderror
                     </div>
 
+                    <!-- Services -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Services</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            @foreach($services as $service)
+                                <div class="flex items-center">
+                                    <input type="checkbox"
+                                           name="services[]"
+                                           value="{{ $service->id }}"
+                                           id="service_{{ $service->id }}"
+                                           {{ in_array($service->id, old('services', [])) ? 'checked' : '' }}
+                                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="service_{{ $service->id }}" class="ml-2 text-sm text-gray-700">
+                                        {{ $service->name }} - ₱{{ number_format($service->price, 2) }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                        @error('services')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Available Status -->
                     <div class="md:col-span-2">
                         <div class="flex items-center">

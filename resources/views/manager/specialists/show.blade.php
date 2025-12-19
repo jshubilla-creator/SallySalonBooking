@@ -139,8 +139,8 @@
                                     <li class="py-4">
                                         <div class="flex items-center space-x-4">
                                             <div class="flex-shrink-0">
-                                                @if($appointment->user->profile_photo_path)
-                                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ Storage::url($appointment->user->profile_photo_path) }}" alt="{{ $appointment->user->name }}">
+                                                @if($appointment->user->profile_picture_url)
+                                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $appointment->user->profile_picture_url }}" alt="{{ $appointment->user->name }}">
                                                 @else
                                                     <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
                                                         <span class="text-sm font-medium text-green-600">{{ substr($appointment->user->name, 0, 1) }}</span>
